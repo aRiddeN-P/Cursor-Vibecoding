@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>چرخ شانس</title>
+  <link rel="preconnect" href="https://fonts.bunny.net" />
+  <link href="https://fonts.bunny.net/css?family=vazirmatn:400,700,800" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --neon: #ff2020;
+      --neon-glow: 0 0 12px #ff2020, 0 0 24px rgba(255, 32, 32, 0.45);
+      --wheel-size: 300px;
+      --wheel-scale: 1;
+      --pointer-offset: 18px;
+      --composition-width: auto;
+      --wheel-btn-gap: 12px;
+      --btn-width: 165px;
+      --btn-height: 44px;
+      --btn-radius: 16px;
+      --btn-aspect: 3.5;
+      --btn-font-size: 15px;
+      --btn-padding-x: 24px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      background: var(--bg);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: row;
+      direction: ltr; /* چرخ چپ، تصویر راست */
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* ---- Left: spin wheel (size synced to reference image) ---- */
+    .panel-wheel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: var(--bg);
+      border-right: 1px solid #1a1a1a;
+    }
+
+    .wheel-composition {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: var(--composition-width, auto);
+      max-width: 100%;
+      gap: 0;
+    }
+
+    /* ---- Right: reference image ---- */
+    .panel-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: var(--bg);
+    }
+
+    .panel-image {
+      position: relative;
+    }
+
+    .panel-image img {
+      max-width: 100%;
+      max-height: 95vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .panel-image img.is-loading {
+      opacity: 0.25;
+    }
+
+    .ref-img-hint {
+      display: none;
+      text-align: center;
+      color: #86868b;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      padding: 1rem;
+      max-width: 280px;
+    }
+
+    .ref-img-hint.show {
+      display: block;
+    }
+
+    .ref-img-hint code {
+      font-size: 0.75rem;
+      color: #ff6b6b;
+      word-break: break-all;
+    }
+
+    .wheel-stage {
+      position: relative;
+      width: var(--wheel-size);
+      height: calc(var(--wheel-size) + var(--pointer-offset));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Pointer — scales with wheel */
+    .pointer {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      width: 0;
+      height: 0;
+      border-left: calc(14px * var(--wheel-scale)) solid transparent;
+      border-right: calc(14px * var(--wheel-scale)) solid transparent;
+      border-top: calc(22px * var(--wheel-scale)) solid var(--neon);
+      filter: drop-shadow(0 0 8px #ff2020) drop-shadow(0 0 16px rgba(255, 32, 32, 0.8));
+    }
+
+    .wheel-outer {
+      position: relative;
+      width: var(--wheel-size);
+      height: var(--wheel-size);
+      margin-top: var(--pointer-offset);
+      border-radius: 50%;
+      box-shadow: var(--neon-glow);
+    }
+
+    .wheel-outer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid var(--neon);
+      box-shadow: var(--neon-glow);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .wheel-spinner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transition: none;
+      will-change: transform;
+    }
+
+    .wheel-spinner svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Segment labels — horizontal (counter-rotated), orbit with wheel */
+    .wheel-labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .wheel-labels.spinning {
+      transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      will-change: transform;
+    }
+
+    .seg-label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: normal;
+      padding: calc(1px * var(--wheel-scale)) calc(2px * var(--wheel-scale));
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+
+    .seg-label .prize-big {
+      display: block;
+      font-size: var(--label-prize-big, 17px);
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .seg-label .prize-sub {
+      display: block;
+      font-size: var(--label-prize-sub, 10px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-top: calc(1px * var(--wheel-scale));
+      opacity: 0.95;
+    }
+
+    .seg-label.label-empty {
+      font-size: var(--label-empty-size, 16px);
+      line-height: 1;
+    }
+
+    /* دکمه چرخوندن — تصویر مرجع + fallback CSS */
+    .spin-btn {
+      position: relative;
+      width: var(--btn-width);
+      height: var(--btn-height);
+      min-height: var(--btn-height);
+      max-width: 100%;
+      margin-top: var(--wheel-btn-gap);
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.15s, filter 0.2s;
+    }
+
+    .spin-btn-visual {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .spin-btn--has-image .spin-btn-visual {
+      opacity: 1;
+      /* بدون فیلتر اضافه — همان پیکسل‌های تصویر مرجع */
+    }
+
+    .spin-btn-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      font-size: var(--btn-font-size);
+      font-weight: 800;
+      color: #fff;
+      background-color: #ff1818;
+      background-image: linear-gradient(
+        180deg,
+        rgba(255, 130, 130, 0.4) 0%,
+        rgba(255, 24, 24, 0) 42%,
+        rgba(140, 0, 0, 0.3) 100%
+      );
+      border: 1px solid rgba(255, 215, 215, 0.6);
+      border-radius: var(--btn-radius);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      box-shadow:
+        0 0 12px rgba(255, 32, 32, 0.55),
+        0 0 24px rgba(255, 32, 32, 0.35),
+        inset 0 1px 0 rgba(255, 210, 210, 0.55),
+        inset 0 -2px 6px rgba(90, 0, 0, 0.4);
+    }
+
+    .spin-btn--has-image .spin-btn-fallback {
+      display: none;
+    }
+
+    .spin-btn:hover:not(:disabled) {
+      transform: scale(1.02);
+    }
+
+    .spin-btn:hover:not(:disabled) .spin-btn-visual {
+      filter: brightness(1.05);
+    }
+
+    .spin-btn:hover:not(:disabled) .spin-btn-fallback {
+      filter: brightness(1.05);
+    }
+
+    .spin-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.72);
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      position: relative;
+      max-width: 380px;
+      width: 100%;
+      padding: 2rem 1.75rem 1.5rem;
+      background: #141414;
+      border: 2px solid var(--neon);
+      border-radius: 16px;
+      box-shadow: 0 0 20px #ff2020, 0 0 40px rgba(255, 32, 32, 0.25);
+      text-align: center;
+      transform: scale(0.92);
+      transition: transform 0.35s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    }
+
+    .modal-overlay.show .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #888;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { color: #fff; }
+
+    .modal-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.7;
+      color: #fff;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-ok {
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: transparent;
+      border: 2px solid var(--neon);
+      border-radius: 50px;
+      padding: 0.5rem 2rem;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255, 32, 32, 0.4);
+    }
+
+    .modal-ok:hover { background: rgba(255, 32, 32, 0.12); }
+
+    @media (max-width: 900px) {
+      .page { flex-direction: column; }
+      .panel-wheel {
+        border-right: none;
+        border-bottom: 1px solid #1a1a1a;
+        min-height: 55vh;
+      }
+      .panel-image { min-height: 40vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- LEFT: interactive wheel -->
+    <section class="panel-wheel" aria-label="چرخ شانس">
+      <div class="wheel-composition" id="wheelComposition">
+      <div class="wheel-stage">
+        <div class="pointer" aria-hidden="true"></div>
+
+        <div class="wheel-outer">
+          <div class="wheel-spinner" id="wheelSpinner">
+            <svg id="wheelSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ff2020" flood-opacity="0.9"/>
+                </filter>
+                <filter id="centerGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ff2020" flood-opacity="0.5"/>
+                </filter>
+              </defs>
+              <g id="segmentsGroup"></g>
+              <!-- Center hub -->
+              <circle cx="150" cy="150" r="28" fill="#0a0a0a" stroke="#ff2020" stroke-width="1.5" filter="url(#centerGlow)" opacity="0.95"/>
+              <circle cx="150" cy="150" r="18" fill="#111" stroke="#331111" stroke-width="1"/>
+            </svg>
+          </div>
+          <!-- Labels rotate with wheel but stay horizontal via counter-rotation -->
+          <div class="wheel-labels" id="wheelLabels"></div>
+        </div>
+      </div>
+
+      <button type="button" class="spin-btn" id="spinBtn" aria-label="چرخوندن">
+        <img id="spinBtnVisual" class="spin-btn-visual" alt="" width="1" height="1" />
+        <span class="spin-btn-fallback" aria-hidden="true">چرخوندن</span>
+      </button>
+      </div>
+    </section>
+
+    <!-- RIGHT: attached reference image -->
+    <section class="panel-image" aria-label="تصویر مرجع">
+      <img
+        id="referenceImg"
+        class="is-loading"
+        alt="چرخ شانس — مرجع طراحی"
+      />
+      <p id="refImgHint" class="ref-img-hint" hidden>
+        تصویر مرجع لود نشد.<br />
+        در ترمینال اجرا کنید:<br />
+        <code>.\copy-reference.ps1</code>
+      </p>
+    </section>
+  </div>
+
+  <!-- Result modal -->
+  <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalText">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="modalClose" aria-label="بستن">×</button>
+      <p class="modal-text" id="modalText"></p>
+      <button type="button" class="modal-ok" id="modalOk">باشه</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CX = 150;
+      const CY = 150;
+      const R = 142;
+      const SEGMENT_COUNT = 6;
+      const DEG_PER_SEG = 360 / SEGMENT_COUNT;
+      const SPIN_DURATION_MS = 4500;
+      const EASING = 'cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+      const MIN_SPIN_DEG = 1440;
+      const MAX_SPIN_DEG = 2160;
+      const PRIZE_WEIGHT = 1;
+      const EMPTY_WEIGHT = 10; /* هر پوچ ۱۰ برابر هر جایزه */
+
+      /** Clockwise from top */
+      const SEGMENTS = [
+        { label: '۱ میلیون تومان جایزه', type: 'prize', prizeKey: '1m' },
+        { label: 'پوچ', type: 'empty' },
+        { label: '۱۰ میلیون تومان جایزه', type: 'prize', prizeKey: '10m' },
+        { label: 'پوچ', type: 'empty' },
+        { label: '۱۰۰ میلیون تومان جایزه', type: 'prize', prizeKey: '100m' },
+        { label: 'پوچ', type: 'empty' },
+      ];
+
+      const PRIZE_MESSAGES = {
+        '1m': '🎉 تبریک! برنده ۱ میلیون تومان شدی!',
+        '10m': '🎉 تبریک! برنده ۱۰ میلیون تومان شدی!',
+        '100m': '🎉 تبریک! برنده ۱۰۰ میلیون تومان شدی!',
+      };
+
+      let currentRotation = 0;
+      let isSpinning = false;
+      let spinEndHandler = null;
+
+      const wheelSpinner = document.getElementById('wheelSpinner');
+      const wheelLabels = document.getElementById('wheelLabels');
+      const segmentsGroup = document.getElementById('segmentsGroup');
+      const spinBtn = document.getElementById('spinBtn');
+      const modal = document.getElementById('modal');
+      const modalText = document.getElementById('modalText');
+      const modalClose = document.getElementById('modalClose');
+      const modalOk = document.getElementById('modalOk');
+
+      /** Degrees clockwise from top → SVG polar coords */
+      function polar(degFromTop, radius) {
+        const rad = ((degFromTop - 90) * Math.PI) / 180;
+        return {
+          x: CX + radius * Math.cos(rad),
+          y: CY + radius * Math.sin(rad),
+        };
+      }
+
+      /** Build SVG segment paths + dividers */
+      function buildWheelSvg() {
+        segmentsGroup.innerHTML = '';
+
+        for (let i = 0; i < SEGMENT_COUNT; i++) {
+          const startDeg = i * DEG_PER_SEG - DEG_PER_SEG / 2;
+          const endDeg = i * DEG_PER_SEG + DEG_PER_SEG / 2;
+          const p1 = polar(startDeg, R);
+          const p2 = polar(endDeg, R);
+          const largeArc = DEG_PER_SEG > 180 ? 1 : 0;
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute(
+            'd',
+            `M ${CX} ${CY} L ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${R} ${R} 0 ${largeArc} 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} Z`
+          );
+          path.setAttribute('fill', '#000000');
+          path.setAttribute('stroke', '#ff2020');
+          path.setAttribute('stroke-width', '3');
+          path.setAttribute('filter', 'url(#neonGlow)');
+          segmentsGroup.appendChild(path);
+        }
+
+        /* Extra divider lines at exact boundaries for crisp neon edges */
+        for (let i = 0; i < SEGMENT_COUNT; i++) {
+          const boundaryDeg = i * DEG_PER_SEG - DEG_PER_SEG / 2;
+          const outer = polar(boundaryDeg, R);
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(CX));
+          line.setAttribute('y1', String(CY));
+          line.setAttribute('x2', outer.x.toFixed(2));
+          line.setAttribute('y2', outer.y.toFixed(2));
+          line.setAttribute('stroke', '#ff2020');
+          line.setAttribute('stroke-width', '3');
+          line.setAttribute('filter', 'url(#neonGlow)');
+          segmentsGroup.appendChild(line);
+        }
+      }
+
+      function getWheelScale() {
+        const size =
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--wheel-size')
+          ) || 300;
+        return size / 300;
+      }
+
+      const LABEL_RADIUS_BASE = 102; /* دورتر از مرکز، داخل بخش */
+      const LABEL_ARC_MARGIN = 0.86; /* حاشیه از خطوط تقسیم */
+
+      function getLabelRadius() {
+        return LABEL_RADIUS_BASE * getWheelScale();
+      }
+
+      /** حداکثر عرض متن در قوس ۶۰° بدون عبور از خطوط */
+      function getLabelMaxWidth(radius) {
+        const halfAngleRad = ((DEG_PER_SEG / 2) * Math.PI) / 180;
+        return 2 * radius * Math.sin(halfAngleRad) * LABEL_ARC_MARGIN;
+      }
+
+      /** بزرگ‌ترین فونت ممکن با توجه به عرض مجاز */
+      function applyLabelFontSizes(labelRadius, maxW) {
+        const s = getWheelScale();
+        const prizeBig = Math.round(Math.min(maxW * 0.78, 30 * s));
+        const prizeSub = Math.round(Math.min(maxW * 0.36, 14 * s));
+        const emptySize = Math.round(Math.min(maxW * 0.62, 24 * s));
+        const root = document.documentElement;
+        root.style.setProperty('--label-prize-big', `${prizeBig}px`);
+        root.style.setProperty('--label-prize-sub', `${prizeSub}px`);
+        root.style.setProperty('--label-empty-size', `${emptySize}px`);
+      }
+
+      function setLabelContent(el, seg) {
+        if (seg.type === 'prize') {
+          const m = seg.label.match(/^(.+?)\s+(میلیون تومان جایزه)$/);
+          if (m) {
+            el.innerHTML =
+              `<span class="prize-big">${m[1]}</span>` +
+              `<span class="prize-sub">${m[2]}</span>`;
+            return;
+          }
+        }
+        el.textContent = seg.label;
+        if (seg.type === 'empty') el.classList.add('label-empty');
+      }
+
+      /** Build horizontal labels; counter-rotate so text stays level while orbiting */
+      function buildLabels() {
+        wheelLabels.innerHTML = '';
+        const labelRadius = getLabelRadius();
+        const maxW = getLabelMaxWidth(labelRadius);
+        applyLabelFontSizes(labelRadius, maxW);
+
+        SEGMENTS.forEach((seg, i) => {
+          const centerDeg = i * DEG_PER_SEG;
+          const pos = polar(centerDeg, labelRadius);
+          const el = document.createElement('div');
+          el.className = 'seg-label';
+          setLabelContent(el, seg);
+          el.style.left = `${(pos.x / 300) * 100}%`;
+          el.style.top = `${(pos.y / 300) * 100}%`;
+          el.style.maxWidth = `${maxW}px`;
+          el.dataset.index = String(i);
+          wheelLabels.appendChild(el);
+        });
+      }
+
+      /**
+       * Final rotation (mod 360) that places segment `index` center under top pointer.
+       * Segment i center is at i * 60° on the wheel; after rotating wheel by R clockwise,
+       * center appears at (i * 60 + R) % 360. Pointer at 0° → R = (360 - i * 60) % 360.
+       */
+      function rotationModForSegment(index) {
+        return (360 - index * DEG_PER_SEG) % 360;
+      }
+
+      /** Which segment index is under the top pointer at given total rotation */
+      function getSegmentAtPointer(totalRotation) {
+        const norm = ((totalRotation % 360) + 360) % 360;
+        const index = Math.round(((360 - norm) % 360) / DEG_PER_SEG) % SEGMENT_COUNT;
+        return index;
+      }
+
+      /**
+       * Weighted random: each «پوچ» weight = 9, each prize = 1.
+       * Pool 33 → P(each پوچ) ≈ 30%, P(any پوچ) ≈ 91%, P(any prize) ≈ 9%.
+       */
+      function pickWeightedSegmentIndex() {
+        const pool = [];
+        SEGMENTS.forEach((seg, index) => {
+          const weight = seg.type === 'empty' ? EMPTY_WEIGHT : PRIZE_WEIGHT;
+          for (let w = 0; w < weight; w++) pool.push(index);
+        });
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      function applyRotation(deg, animate) {
+        const transform = `rotate(${deg}deg)`;
+        if (animate) {
+          wheelSpinner.style.transition = `transform ${SPIN_DURATION_MS}ms ${EASING}`;
+          wheelLabels.classList.add('spinning');
+          wheelLabels.style.transition = `transform ${SPIN_DURATION_MS}ms ${EASING}`;
+        } else {
+          wheelSpinner.style.transition = 'none';
+          wheelLabels.style.transition = 'none';
+          wheelLabels.classList.remove('spinning');
+        }
+        wheelSpinner.style.transform = transform;
+
+        /* Labels orbit with wheel but stay horizontal */
+        SEGMENTS.forEach((_, i) => {
+          const label = wheelLabels.children[i];
+          if (!label) return;
+          const centerDeg = i * DEG_PER_SEG;
+          label.style.transform = `translate(-50%, -50%) rotate(${-deg}deg)`;
+        });
+        wheelLabels.style.transform = transform;
+      }
+
+      function showModal(message) {
+        modalText.textContent = message;
+        modal.classList.add('show');
+      }
+
+      function hideModal() {
+        modal.classList.remove('show');
+      }
+
+      function getResultMessage(segmentIndex) {
+        const seg = SEGMENTS[segmentIndex];
+        if (seg.type === 'empty') {
+          return 'متأسفانه پوچ بود! شانس دیگه‌ای داری؟ 😢';
+        }
+        return PRIZE_MESSAGES[seg.prizeKey] || `🎉 تبریک! برنده شدی!`;
+      }
+
+      function spin() {
+        if (isSpinning) return;
+        isSpinning = true;
+        spinBtn.disabled = true;
+
+        const targetIndex = pickWeightedSegmentIndex();
+        const targetMod = rotationModForSegment(targetIndex);
+        const currentMod = ((currentRotation % 360) + 360) % 360;
+
+        /* Degrees needed (mod 360) to align from current position to target segment center */
+        let alignDelta = (targetMod - currentMod + 360) % 360;
+        if (alignDelta === 0) alignDelta = 360;
+
+        const extraSpin =
+          MIN_SPIN_DEG + Math.floor(Math.random() * (MAX_SPIN_DEG - MIN_SPIN_DEG + 1));
+
+        const totalAdd = extraSpin + alignDelta;
+        currentRotation += totalAdd;
+
+        applyRotation(currentRotation, true);
+
+        if (spinEndHandler) {
+          wheelSpinner.removeEventListener('transitionend', spinEndHandler);
+        }
+
+        spinEndHandler = function onEnd(e) {
+          if (e.propertyName !== 'transform') return;
+          wheelSpinner.removeEventListener('transitionend', spinEndHandler);
+          spinEndHandler = null;
+
+          const landed = getSegmentAtPointer(currentRotation);
+          showModal(getResultMessage(landed));
+
+          isSpinning = false;
+          spinBtn.disabled = false;
+        };
+
+        wheelSpinner.addEventListener('transitionend', spinEndHandler);
+      }
+
+      spinBtn.addEventListener('click', spin);
+      modalClose.addEventListener('click', hideModal);
+      modalOk.addEventListener('click', hideModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) hideModal();
+      });
+
+      const isWheelNeon = (r, g, b) => r > 150 && r > g + 50 && r > b + 50 && r - g > 35;
+      const isButtonRed = (r, g, b) => r > 175 && g < 110 && b < 110 && r - g > 55;
+
+      /**
+       * اندازه چرخ + دکمه از تصویر مرجع کامل (سمت راست).
+       */
+      function measureWheelBounds(img) {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        if (!w || !h) return null;
+
+        const fallbackBounds = () => {
+          const d = w * 0.843;
+          return {
+            diameter: d,
+            pointerTop: h * 0.055,
+            wheelBottom: h * 0.71,
+            imgWidth: w,
+            imgHeight: h,
+            buttonGap: h * 0.018,
+            buttonWidth: d * 0.46,
+            buttonHeight: d * 0.15,
+            btnLeft: (w - d * 0.46) / 2,
+            btnTop: h * 0.73,
+            hasButton: false,
+          };
+        };
+
+        let data;
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0);
+          data = ctx.getImageData(0, 0, w, h).data;
+        } catch (_) {
+          return fallbackBounds();
+        }
+
+        let minX = w;
+        let maxX = 0;
+        let minY = h;
+        let maxY = 0;
+        let wheelFound = false;
+        const wheelScanH = Math.floor(h * 0.72);
+
+        for (let y = 0; y < wheelScanH; y++) {
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            if (isWheelNeon(data[i], data[i + 1], data[i + 2])) {
+              wheelFound = true;
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+
+        if (!wheelFound) return fallbackBounds();
+
+        const diameter = maxX - minX;
+        const wheelCx = (minX + maxX) / 2;
+        const wheelCy = (minY + maxY) / 2;
+        const wheelRadius = diameter / 2;
+        const wheelBottom = wheelCy + wheelRadius;
+
+        let btnMinX = w;
+        let btnMaxX = 0;
+        let btnMinY = h;
+        let btnMaxY = 0;
+        let btnFound = false;
+        const btnScanStart = Math.floor(h * 0.68);
+
+        for (let y = btnScanStart; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            if (isButtonRed(data[i], data[i + 1], data[i + 2])) {
+              btnFound = true;
+              if (x < btnMinX) btnMinX = x;
+              if (x > btnMaxX) btnMaxX = x;
+              if (y < btnMinY) btnMinY = y;
+              if (y > btnMaxY) btnMaxY = y;
+            }
+          }
+        }
+
+        const base = {
+          diameter,
+          pointerTop: minY,
+          wheelBottom,
+          imgWidth: w,
+          imgHeight: h,
+          wheelCx,
+          hasButton: btnFound,
+        };
+
+        if (btnFound && btnMaxX > btnMinX && btnMaxY > btnMinY) {
+          base.btnLeft = btnMinX;
+          base.btnTop = btnMinY;
+          base.buttonWidth = btnMaxX - btnMinX;
+          base.buttonHeight = btnMaxY - btnMinY;
+          base.buttonGap = Math.max(2, btnMinY - wheelBottom);
+        } else {
+          base.buttonWidth = diameter * 0.46;
+          base.buttonHeight = base.buttonWidth / 3;
+          base.btnLeft = wheelCx - base.buttonWidth / 2;
+          base.btnTop = wheelBottom + h * 0.012;
+          base.buttonGap = h * 0.018;
+        }
+
+        return base;
+      }
+
+      /** برش دکمه از همان تصویر مرجع — ظاهر یکسان با سمت راست */
+      function extractButtonSprite(img, bounds) {
+        if (!bounds.hasButton && bounds.btnLeft == null) return null;
+
+        try {
+          const pad = Math.max(4, Math.round(bounds.buttonWidth * 0.06));
+          const sx = Math.max(0, Math.floor(bounds.btnLeft - pad));
+          const sy = Math.max(0, Math.floor(bounds.btnTop - pad));
+          const sw = Math.min(img.naturalWidth - sx, Math.ceil(bounds.buttonWidth + pad * 2));
+          const sh = Math.min(img.naturalHeight - sy, Math.ceil(bounds.buttonHeight + pad * 2));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = sw;
+          canvas.height = sh;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+          return {
+            dataUrl: canvas.toDataURL('image/png'),
+            aspect: sw / sh,
+            srcW: sw,
+            srcH: sh,
+          };
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function applySpinButtonFromReference(refImg, bounds, displayScale) {
+        const spinBtn = document.getElementById('spinBtn');
+        const spinBtnVisual = document.getElementById('spinBtnVisual');
+        const wheelSize =
+          parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wheel-size')) ||
+          bounds.diameter * displayScale;
+
+        let btnWidth = Math.round(bounds.buttonWidth * displayScale);
+        let btnHeight = Math.round(bounds.buttonHeight * displayScale);
+        const btnGap = Math.round(Math.max(2, bounds.buttonGap * displayScale * 0.75));
+
+        if (!bounds.hasButton) {
+          btnWidth = Math.round(wheelSize * 0.46);
+          btnHeight = Math.round(btnWidth / 3);
+        }
+
+        const sprite = extractButtonSprite(refImg, bounds);
+        if (sprite && spinBtnVisual) {
+          spinBtnVisual.src = sprite.dataUrl;
+          spinBtnVisual.removeAttribute('width');
+          spinBtnVisual.removeAttribute('height');
+          spinBtn?.classList.add('spin-btn--has-image');
+        } else {
+          spinBtn?.classList.remove('spin-btn--has-image');
+        }
+
+        const btnRadius = Math.round(btnHeight / 2);
+        const btnFont = Math.round(Math.max(13, btnHeight * 0.34));
+
+        document.documentElement.style.setProperty('--wheel-btn-gap', `${btnGap}px`);
+        document.documentElement.style.setProperty('--btn-width', `${btnWidth}px`);
+        document.documentElement.style.setProperty('--btn-height', `${btnHeight}px`);
+        document.documentElement.style.setProperty('--btn-radius', `${btnRadius}px`);
+        document.documentElement.style.setProperty('--btn-font-size', `${btnFont}px`);
+        if (sprite) {
+          document.documentElement.style.setProperty('--btn-aspect', String(sprite.aspect));
+        }
+      }
+
+      function syncLayoutFromReference() {
+        const refImg = document.getElementById('referenceImg');
+        if (!refImg || !refImg.complete || !refImg.naturalWidth) return;
+
+        const bounds = measureWheelBounds(refImg);
+        if (!bounds) return;
+
+        const scale = refImg.offsetWidth / refImg.naturalWidth;
+        const wheelSize = Math.round(bounds.diameter * scale);
+        const pointerOffset = Math.max(10, Math.round(bounds.pointerTop * scale * 0.85));
+        const compositionWidth = refImg.offsetWidth;
+        const wheelScale = wheelSize / 300;
+
+        const root = document.documentElement;
+        root.style.setProperty('--wheel-size', `${wheelSize}px`);
+        root.style.setProperty('--wheel-scale', String(wheelScale));
+        root.style.setProperty('--pointer-offset', `${pointerOffset}px`);
+        root.style.setProperty('--composition-width', `${compositionWidth}px`);
+
+        applySpinButtonFromReference(refImg, bounds, scale);
+
+        buildLabels();
+        applyRotation(currentRotation, false);
+      }
+
+      const REF_IMAGE_PATHS = [
+        'assets/wheel-reference.png',
+      ];
+
+      function loadReferenceImage() {
+        const refImg = document.getElementById('referenceImg');
+        const hint = document.getElementById('refImgHint');
+        if (!refImg) return;
+
+        let pathIdx = 0;
+
+        const onSuccess = () => {
+          refImg.classList.remove('is-loading');
+          if (hint) hint.hidden = true;
+          syncLayoutFromReference();
+        };
+
+        const onFail = () => {
+          refImg.classList.remove('is-loading');
+          if (hint) hint.hidden = false;
+        };
+
+        const tryNext = () => {
+          if (pathIdx >= REF_IMAGE_PATHS.length) {
+            onFail();
+            return;
+          }
+          refImg.classList.add('is-loading');
+          refImg.src = REF_IMAGE_PATHS[pathIdx++];
+        };
+
+        refImg.addEventListener('load', () => {
+          if (refImg.naturalWidth > 0) onSuccess();
+        });
+
+        refImg.addEventListener('error', tryNext);
+
+        tryNext();
+      }
+
+      const refImg = document.getElementById('referenceImg');
+      if (refImg) {
+        loadReferenceImage();
+
+        window.addEventListener('resize', () => {
+          window.requestAnimationFrame(syncLayoutFromReference);
+        });
+
+        if (typeof ResizeObserver !== 'undefined') {
+          const ro = new ResizeObserver(() => {
+            window.requestAnimationFrame(syncLayoutFromReference);
+          });
+          ro.observe(refImg);
+        }
+      }
+
+      buildWheelSvg();
+      buildLabels();
+      applyRotation(0, false);
+    })();
+  </script>
+</body>
+</html>
