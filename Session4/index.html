@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مسیر یک درخواست وب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-badge" aria-hidden="true">🌐</div>
+      <div>
+        <h1 class="site-title">مسیر یک درخواست وب</h1>
+        <p class="site-subtitle">از تایپ URL تا دریافت پاسخ — یک سفر تصویری</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- بخش اول: اینفوگرافیک مسیر -->
+    <section class="section timeline-section" aria-labelledby="timeline-title">
+      <div class="section-head">
+        <h2 id="timeline-title">مسیر درخواست</h2>
+        <p class="section-desc">URL → DNS → TCP → HTTP → پاسخ</p>
+        <div class="timeline-controls">
+          <button type="button" id="btnPlay" class="btn btn-primary" aria-label="پخش انیمیشن مسیر">
+            ▶ پخش مسیر
+          </button>
+          <button type="button" id="btnReset" class="btn btn-ghost" aria-label="بازنشانی انیمیشن">
+            ↺ بازنشانی
+          </button>
+        </div>
+      </div>
+
+      <div class="timeline-wrap" id="timelineWrap">
+        <!-- شاخه DNS -->
+        <div class="dns-branch" id="dnsBranch" aria-label="مسیر DNS">
+          <div class="dns-line" aria-hidden="true"></div>
+          <article class="node node-dns" data-node="dns" tabindex="0">
+            <span class="node-icon" aria-hidden="true">🔍</span>
+            <h3 class="node-title">DNS</h3>
+            <p class="node-sub">Resolver</p>
+          </article>
+        </div>
+
+        <!-- خط اصلی + پکت -->
+        <div class="timeline-track" id="timelineTrack">
+          <div class="track-glow" aria-hidden="true"></div>
+          <div class="packet" id="packet" aria-hidden="true"></div>
+
+          <div class="nodes-row" id="nodesRow">
+            <article class="node" data-node="browser" tabindex="0">
+              <span class="node-icon" aria-hidden="true">💻</span>
+              <h3 class="node-title">مرورگر</h3>
+              <p class="node-sub">Client</p>
+            </article>
+            <article class="node" data-node="router" tabindex="0">
+              <span class="node-icon" aria-hidden="true">📡</span>
+              <h3 class="node-title">روتر خانه</h3>
+              <p class="node-sub">Hop 1</p>
+            </article>
+            <article class="node" data-node="isp" tabindex="0">
+              <span class="node-icon" aria-hidden="true">🏢</span>
+              <h3 class="node-title">ISP</h3>
+              <p class="node-sub">Hop 2</p>
+            </article>
+            <article class="node" data-node="backbone" tabindex="0">
+              <span class="node-icon" aria-hidden="true">🌍</span>
+              <h3 class="node-title">Backbone</h3>
+              <p class="node-sub">اینترنت</p>
+            </article>
+            <article class="node" data-node="edge" tabindex="0">
+              <span class="node-icon" aria-hidden="true">⚡</span>
+              <h3 class="node-title">Edge</h3>
+              <p class="node-sub">Hop N</p>
+            </article>
+            <article class="node node-server" data-node="server" tabindex="0">
+              <span class="node-icon" aria-hidden="true">🖥️</span>
+              <h3 class="node-title">سرور</h3>
+              <p class="node-sub">93.184.216.34</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="timeline-legend" aria-hidden="true">
+          <span class="legend-item"><span class="dot dot-cyan"></span> مسیر TCP/HTTP</span>
+          <span class="legend-item"><span class="dot dot-dashed"></span> پرس‌وجوی DNS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- بخش دوم: کدهای وضعیت HTTP -->
+    <section class="section status-section" aria-labelledby="status-title">
+      <div class="section-head">
+        <h2 id="status-title">کدهای وضعیت HTTP</h2>
+        <p class="section-desc">روی هر کد کلیک کنید تا رفتار مسیر را ببینید</p>
+      </div>
+
+      <div class="status-tabs" role="tablist" aria-label="فیلتر دسته‌های وضعیت">
+        <button type="button" class="status-tab active" role="tab" aria-selected="true" data-filter="all">همه</button>
+        <button type="button" class="status-tab" role="tab" aria-selected="false" data-filter="1xx">1xx</button>
+        <button type="button" class="status-tab" role="tab" aria-selected="false" data-filter="2xx">2xx</button>
+        <button type="button" class="status-tab" role="tab" aria-selected="false" data-filter="3xx">3xx</button>
+        <button type="button" class="status-tab" role="tab" aria-selected="false" data-filter="4xx">4xx</button>
+        <button type="button" class="status-tab" role="tab" aria-selected="false" data-filter="5xx">5xx</button>
+      </div>
+
+      <div id="statusGroups" class="status-groups"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      منبع بیشتر:
+      <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status" target="_blank" rel="noopener noreferrer">
+        MDN — HTTP status codes
+      </a>
+    </p>
+    <p class="footer-note">ساخته‌شده برای آموزش — Vanilla HTML/CSS/JS</p>
+  </footer>
+
+  <!-- Toast پیام -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
