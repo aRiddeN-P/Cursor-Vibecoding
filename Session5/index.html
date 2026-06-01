@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoQuiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section id="screen-home" class="screen" aria-label="Home">
+      <header class="screen-header">
+        <h1 class="logo">geoquiz</h1>
+        <div class="header-actions">
+          <button
+            id="btn-reset"
+            type="button"
+            class="btn-icon"
+            aria-label="Reset all progress"
+            title="Reset progress"
+          >↻</button>
+          <div id="hearts-home" class="hearts" aria-label="Lives remaining"></div>
+        </div>
+      </header>
+      <p class="subtitle">Learn geography, one question at a time.</p>
+      <p id="home-regen" class="regen-info hidden" aria-live="polite">
+        Next heart in <span id="home-regen-time">--:--</span>
+      </p>
+      <div id="level-list" class="level-list" role="list" aria-label="Choose a level"></div>
+      <button
+        id="btn-leaderboard"
+        type="button"
+        class="btn btn-secondary"
+        aria-label="View leaderboard"
+      >
+        Leaderboard
+      </button>
+    </section>
+
+    <section id="screen-game" class="screen hidden" aria-label="Game">
+      <header class="game-top">
+        <button
+          id="btn-quit"
+          type="button"
+          class="btn-icon"
+          aria-label="Quit and return home"
+        >
+          ✕
+        </button>
+        <div id="hearts-game" class="hearts" aria-label="Lives remaining"></div>
+      </header>
+      <div class="progress-wrap" aria-label="Level progress">
+        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"></div>
+      </div>
+      <p id="level-label" class="level-label"></p>
+      <div id="question-area" class="question-area">
+        <div id="question-media" class="question-media hidden"></div>
+        <h2 id="question-text" class="question-text"></h2>
+      </div>
+      <div id="options" class="options" role="group" aria-label="Answer choices"></div>
+      <p id="score-display" class="score-display" aria-live="polite"></p>
+    </section>
+
+    <section id="screen-no-hearts" class="screen hidden" aria-label="Out of hearts">
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">💔</span>
+        <h2>Out of hearts!</h2>
+        <p>Take a break and come back soon.</p>
+        <p class="countdown-label">Next heart in:</p>
+        <p id="heart-countdown" class="countdown" aria-live="polite">--:--</p>
+        <button
+          id="btn-no-hearts-home"
+          type="button"
+          class="btn btn-secondary"
+          aria-label="Return to home"
+        >
+          Back to home
+        </button>
+      </div>
+    </section>
+
+    <section id="screen-win" class="screen hidden" aria-label="Level complete">
+      <div class="empty-state win-state">
+        <div class="win-visual feedback-visual">
+          <span id="win-emoji" class="feedback-emoji" aria-hidden="true">🏆</span>
+          <img id="win-gif" class="feedback-gif hidden" src="" alt="" />
+        </div>
+        <p id="win-badge" class="win-badge"></p>
+        <h2 id="win-title">Level complete!</h2>
+        <p id="win-message" class="win-message"></p>
+        <p id="win-score" class="win-score"></p>
+        <p id="win-level-name" class="win-level-name"></p>
+        <button
+          id="btn-win-next"
+          type="button"
+          class="btn btn-primary"
+          aria-label="Continue to next level or home"
+        >
+          Continue
+        </button>
+        <button
+          id="btn-win-home"
+          type="button"
+          class="btn btn-secondary"
+          aria-label="Return to home"
+        >
+          Home
+        </button>
+      </div>
+    </section>
+
+    <section id="screen-leaderboard" class="screen hidden" aria-label="Leaderboard">
+      <header class="screen-header">
+        <button
+          id="btn-leaderboard-back"
+          type="button"
+          class="btn-icon"
+          aria-label="Back to home"
+        >
+          ←
+        </button>
+        <h2 class="screen-title">Leaderboard</h2>
+      </header>
+      <ol id="leaderboard-list" class="leaderboard-list" aria-label="Top scores"></ol>
+      <p id="leaderboard-empty" class="leaderboard-empty hidden">No scores yet. Complete a level!</p>
+    </section>
+  </main>
+
+  <div id="overlay-feedback" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Answer feedback">
+    <div class="overlay-card">
+      <div class="feedback-visual">
+        <span id="feedback-emoji" class="feedback-emoji" aria-hidden="true">🎉</span>
+        <img id="feedback-gif" class="feedback-gif" src="" alt="" />
+      </div>
+      <p id="feedback-message" class="feedback-message"></p>
+      <button
+        id="btn-feedback-next"
+        type="button"
+        class="btn btn-primary"
+        aria-label="Continue"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <div id="loading" class="loading" aria-live="polite" aria-busy="true">
+    <p>Loading countries…</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
