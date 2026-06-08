@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>لیدربورد — وایب کاهوت</title>
+<script>(function(){var t=localStorage.getItem('vibe_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&family=Lilita+One&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:['class','[data-theme="dark"]'],theme:{extend:{colors:{primary:'hsl(var(--p))','primary-content':'hsl(var(--pc))',secondary:'hsl(var(--s))',accent:'hsl(var(--a))',neutral:'hsl(var(--n))','base-100':'hsl(var(--b1))','base-200':'hsl(var(--b2))','base-300':'hsl(var(--b3))','base-content':'hsl(var(--bc))',info:'hsl(var(--in))',success:'hsl(var(--su))',warning:'hsl(var(--wa))',error:'hsl(var(--er))'},fontFamily:{sans:['Vazirmatn','sans-serif']}}}};
+</script>
+<link rel="stylesheet" href="./css/style.css">
+<script src="./js/config.js"></script>
+<script src="./js/app.js"></script>
+</head>
+<body class="bg-base-100 text-base-content">
+<main class="max-w-md mx-auto px-4 pt-6">
+  <header class="text-center mb-4">
+    <div class="text-5xl mb-1">🏆</div>
+    <h1 class="h-title">لیدربورد</h1>
+  </header>
+
+  <div role="tablist" class="tabs tabs-boxed mb-4">
+    <a role="tab" id="tab-solo"  class="tab tab-active">🎮 انفرادی</a>
+    <a role="tab" id="tab-group" class="tab">👥 گروهی</a>
+  </div>
+
+  <div class="cr-card"><div class="p-4">
+    <ol id="lb-list" class="space-y-2 text-sm">
+      <li class="text-center opacity-70">در حال بارگذاری…</li>
+    </ol>
+  </div></div>
+
+  <p id="hint" class="text-xs text-center mt-3 opacity-60"></p>
+</main>
+
+<script>
+const list = document.getElementById('lb-list');
+const tabSolo  = document.getElementById('tab-solo');
+const tabGroup = document.getElementById('tab-group');
+const hint = document.getElementById('hint');
+let activeMode = 'solo';
+
+function setActive(mode) {
+  activeMode = mode;
+  tabSolo.classList.toggle('tab-active',  mode === 'solo');
+  tabGroup.classList.toggle('tab-active', mode === 'group');
+  hint.textContent = mode === 'solo'
+    ? 'بهترین امتیاز هر بازیکن در حالت انفرادی.'
+    : 'برنده بازی گروهی کسی است که بازی را کامل کند. حذف‌شدگان بر اساس مرحله‌ای که حذف شده‌اند مرتب می‌شوند.';
+  load(mode);
+}
+
+function rowSolo(p, i) {
+  const medal = ['🥇', '🥈', '🥉'][i] || `${toFa(i + 1)}.`;
+  return `<li class="lb-row">
+    <span style="width:1.5rem;text-align:center">${medal}</span>
+    <div class="avatar"><div class="w-10 rounded-full"><img src="${p.avatar}" alt=""></div></div>
+    <span class="flex-1 font-bold">${p.name}</span>
+    <span class="vk-num text-warning text-xl font-bold">${toFa(p.bestScore)}</span>
+  </li>`;
+}
+
+function rowGroup(p, i) {
+  const medal = ['🥇', '🥈', '🥉'][i] || `${toFa(i + 1)}.`;
+  let status;
+  if (p.eliminated) {
+    const stage = (typeof p.stageReached === 'number') ? p.stageReached + 1 : '?';
+    const total = (typeof p.totalStages === 'number') ? p.totalStages : '?';
+    status = `<span class="badge badge-error badge-sm">حذف در مرحله ${toFa(stage)}/${toFa(total)}</span>`;
+  } else {
+    status = `<span class="badge badge-success badge-sm">${p.totalStages != null ? 'تکمیل ' + toFa(p.totalStages) + ' سوال' : 'تکمیل'}</span>`;
+  }
+  return `<li class="lb-row">
+    <span style="width:1.5rem;text-align:center">${medal}</span>
+    <div class="avatar"><div class="w-10 rounded-full"><img src="${p.avatar}" alt=""></div></div>
+    <div class="flex-1 min-w-0">
+      <div class="font-bold truncate">${p.name}</div>
+      <div class="mt-1">${status}</div>
+    </div>
+    <span class="vk-num text-warning text-xl font-bold">${toFa(p.bestScore)}</span>
+  </li>`;
+}
+
+async function load(mode) {
+  list.innerHTML = '<li class="text-center opacity-70">در حال بارگذاری…</li>';
+  try {
+    const r = await fetch(`${API}/api/leaderboard?mode=${mode}`);
+    const data = await r.json();
+    if (!data.length) {
+      list.innerHTML = `<li class="text-center opacity-70">هنوز بازی ${mode === 'solo' ? 'انفرادی' : 'گروهی'} ثبت نشده — اولین نفر باش!</li>`;
+      return;
+    }
+    list.innerHTML = data.map((p, i) => mode === 'solo' ? rowSolo(p, i) : rowGroup(p, i)).join('');
+  } catch (e) {
+    list.innerHTML = '<li class="text-center text-error">خطا در بارگذاری.</li>';
+  }
+}
+
+tabSolo.addEventListener('click', () => setActive('solo'));
+tabGroup.addEventListener('click', () => setActive('group'));
+setActive('solo');
+renderDock('leaderboard');
+</script>
+</body>
+</html>

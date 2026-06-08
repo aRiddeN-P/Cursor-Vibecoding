@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>بازی گروهی — وایب کاهوت</title>
+<script>(function(){var t=localStorage.getItem('vibe_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&family=Lilita+One&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:['class','[data-theme="dark"]'],theme:{extend:{colors:{primary:'hsl(var(--p))','primary-content':'hsl(var(--pc))',secondary:'hsl(var(--s))',accent:'hsl(var(--a))',neutral:'hsl(var(--n))','base-100':'hsl(var(--b1))','base-200':'hsl(var(--b2))','base-300':'hsl(var(--b3))','base-content':'hsl(var(--bc))',info:'hsl(var(--in))',success:'hsl(var(--su))',warning:'hsl(var(--wa))',error:'hsl(var(--er))'},fontFamily:{sans:['Vazirmatn','sans-serif']}}}};
+</script>
+<link rel="stylesheet" href="./css/style.css">
+<script src="./js/config.js"></script>
+<script src="./js/app.js"></script>
+<script>if (window.requireProfile()) { document.documentElement.style.visibility='hidden'; }</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-base-100 text-base-content">
+<main id="root" class="max-w-md mx-auto px-4 pt-4"></main>
+
+<script>
+const COLORS = ['red', 'blue', 'yellow', 'green'];
+const root = document.getElementById('root');
+
+const playerName  = localStorage.getItem('vibe_player_name');
+const chosenStyle = localStorage.getItem('vibe_avatar_style') || 'bottts';
+const chosenSeed  = localStorage.getItem('vibe_avatar_seed')  || playerName;
+let playerId = sessionStorage.getItem('vibe_player_id') || null;
+let lastPhase = null;
+let lockedAnswer = -1;
+let pollHandle = null;
+let lastShownEnded = false;
+let eliminatedShown = false;
+let joinAttemptInFlight = false;
+
+function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
+
+function startPolling() {
+  if (pollHandle) clearInterval(pollHandle);
+  poll();
+  pollHandle = setInterval(poll, 800);
+}
+
+async function poll() {
+  try {
+    const r = await fetch(`${API}/api/game/state`);
+    const s = await r.json();
+    await handleState(s);
+  } catch (e) { /* keep going */ }
+}
+
+function findMe(state) {
+  if (!playerId) return null;
+  return state.players.find((p) => p.id === playerId) || null;
+}
+
+async function tryAutoJoin() {
+  if (joinAttemptInFlight) return null;
+  joinAttemptInFlight = true;
+  try {
+    const r = await fetch(`${API}/api/players/join`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: playerName, avatarStyle: chosenStyle, avatarSeed: chosenSeed }),
+    });
+    const data = await r.json();
+    if (data.playerId) {
+      playerId = data.playerId;
+      sessionStorage.setItem('vibe_player_id', playerId);
+      sessionStorage.setItem('vibe_session_name', playerName);
+      return data;
+    }
+    return null;
+  } catch (e) { return null; }
+  finally { joinAttemptInFlight = false; }
+}
+
+async function handleState(state) {
+  const me = findMe(state);
+  if (!me && state.phase !== 'ended') {
+    if (state.phase === 'lobby') {
+      await tryAutoJoin();
+      return;
+    }
+    return renderWaitingForLobby(state);
+  }
+  if (me && me.eliminated && !eliminatedShown && state.mode === 'battle') {
+    showElimOverlay(me);
+    eliminatedShown = true;
+  }
+  switch (state.phase) {
+    case 'lobby':    return renderLobby(state, me);
+    case 'question': return renderQuestion(state, me);
+    case 'reveal':   return renderReveal(state, me);
+    case 'between':  return renderBetween(state, me);
+    case 'waiting':  return renderWaiting(state, me);
+    case 'ended':    return renderEnded(state, me);
+  }
+}
+
+function renderWaitingForLobby(state) {
+  root.innerHTML = `
+    <header class="text-center mb-4">
+      <div class="text-5xl mb-1">⌛</div>
+      <h1 class="h-title">منتظر لابی بعدی…</h1>
+      <p class="text-sm opacity-70">${state.phase === 'ended' ? 'بازی قبلی تمام شده' : 'الان یک بازی در جریان است'}</p>
+    </header>
+    <div class="cr-card">
+      <div class="p-4 flex flex-col items-center text-center">
+        <span class="avatar-ring"><img src="${avatarUrl(chosenStyle, chosenSeed)}" class="avatar-img" style="width:80px;height:80px;" alt=""></span>
+        <div class="font-bold mt-2">${playerName}</div>
+        <p class="text-xs opacity-60 mt-2">به‌محض باز شدن لابی، خودکار وارد می‌شوی.</p>
+        <span class="loading loading-dots loading-md mt-2"></span>
+      </div>
+    </div>
+  `;
+}
+
+function renderLobby(state, me) {
+  lastPhase = 'lobby';
+  const players = state.players;
+  root.innerHTML = `
+    <header class="text-center mb-4">
+      <div class="text-4xl mb-1">⏳</div>
+      <h1 class="h-title">در انتظار هاست…</h1>
+      <p class="text-sm opacity-70">${toFa(players.length)} بازیکن وارد شده</p>
+    </header>
+    <div class="cr-card">
+      <div class="p-4">
+        <div class="grid grid-cols-3 gap-3" id="lobbyGrid"></div>
+      </div>
+    </div>
+  `;
+  const grid = root.querySelector('#lobbyGrid');
+  players.forEach((p) => {
+    const isMe = me && p.id === me.id;
+    grid.appendChild(el(`
+      <div class="text-center ${isMe ? 'p-2 rounded-lg' : ''}" ${isMe ? 'style="background:hsl(var(--p)/.12);border:1px solid hsl(var(--p))"' : ''}>
+        <div class="avatar"><div class="w-16 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+        <div class="text-sm mt-1 font-bold truncate">${p.name}${isMe ? ' (شما)' : ''}</div>
+      </div>
+    `));
+  });
+}
+
+function renderQuestion(state, me) {
+  const phaseChanged = lastPhase !== 'question';
+  lastPhase = 'question';
+  if (phaseChanged) lockedAnswer = -1;
+
+  const total = state.questionCount;
+  const idx = state.questionIndex + 1;
+  if (me && me.eliminated) return renderSpectator(state, me);
+
+  if (lockedAnswer >= 0) {
+    root.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <span class="badge badge-ghost">سوال ${toFa(idx)} از ${toFa(total)}</span>
+        <span class="badge badge-warning font-bold">${toFa(me?.score || 0)} امتیاز</span>
+      </div>
+      <div class="timer-bar mb-4"><div id="bar" style="width:${(state.timeLeftMs/10000)*100}%"></div></div>
+      <div class="card bg-base-200">
+        <div class="card-body items-center text-center">
+          <div class="text-2xl mb-2">✋</div>
+          <div class="text-lg font-bold mb-3">پاسخ ثبت شد</div>
+          <div class="ans-btn ${COLORS[lockedAnswer]}" style="min-height:3rem;padding:.5rem 1rem;width:auto;display:inline-flex">${['A','B','C','D'][lockedAnswer]}</div>
+          <div class="mt-3 text-sm opacity-70">منتظر بقیه…</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  root.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="badge badge-ghost">سوال ${toFa(idx)} از ${toFa(total)}</span>
+      <span class="badge badge-warning font-bold">${toFa(me?.score || 0)} امتیاز</span>
+    </div>
+    <div class="timer-bar mb-4"><div id="bar" style="width:${(state.timeLeftMs/10000)*100}%"></div></div>
+    <div class="alert mb-4">
+      <span>یکی از ۴ رنگ را بزن!</span>
+    </div>
+    <div class="grid grid-cols-2 gap-3" id="opts"></div>
+  `;
+  const opts = root.querySelector('#opts');
+  [0,1,2,3].forEach((i) => {
+    const b = el(`<button class="ans-btn ${COLORS[i]}" style="min-height:6.5rem;">${['A','B','C','D'][i]}</button>`);
+    b.addEventListener('click', () => submitAnswer(i));
+    opts.appendChild(b);
+  });
+}
+
+async function submitAnswer(i) {
+  lockedAnswer = i;
+  root.querySelectorAll('.ans-btn').forEach((b, idx) => { b.disabled = true; if (idx !== i) b.classList.add('wrong'); });
+  try {
+    await fetch(`${API}/api/players/answer`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerId, answerIndex: i }),
+    });
+  } catch (e) {}
+}
+
+function renderReveal(state, me) {
+  lastPhase = 'reveal';
+  if (me && me.eliminated && !eliminatedShown && state.mode === 'battle') {
+    showElimOverlay(me);
+    eliminatedShown = true;
+  }
+  if (me && me.eliminated) return renderSpectator(state, me);
+
+  const correct = state.reveal?.correctIndex ?? -1;
+  const wasCorrect = lockedAnswer === correct;
+  root.innerHTML = `
+    <div class="text-center mb-3">
+      <div class="text-6xl mb-1">${wasCorrect ? '✅' : (lockedAnswer < 0 ? '⏰' : '❌')}</div>
+      <div class="text-2xl font-black ${wasCorrect ? 'text-success' : 'text-error'}">
+        ${wasCorrect ? 'درست!' : (lockedAnswer < 0 ? 'پاسخ ندادی' : 'نادرست')}
+      </div>
+    </div>
+    <div class="card bg-base-200">
+      <div class="card-body py-4">
+        <div class="text-sm opacity-70">امتیاز شما</div>
+        <div class="text-4xl font-black text-warning">${toFa(me?.score || 0)}</div>
+        <div class="text-sm opacity-70">رتبه فعلی: ${me ? toFa(me.rank) + ' از ' + toFa(state.players.length) : '—'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBetween(state, me) {
+  lastPhase = 'between'; lockedAnswer = -1;
+  root.innerHTML = `
+    <header class="text-center mb-3">
+      <div class="text-4xl">⏭</div>
+      <h2 class="h-title">سوال بعدی…</h2>
+    </header>
+    <div class="card bg-base-200"><div class="card-body p-4">
+      <div class="font-bold mb-2">جدول امتیاز</div>
+      ${state.players.slice(0, 5).map((p, i) => `
+        <div class="lb-row">
+          <span style="width:1.5rem;text-align:center">${toFa(i+1)}</span>
+          <div class="avatar"><div class="w-9 rounded-full"><img src="${p.avatarUrl}" alt=""></div></div>
+          <span class="flex-1 font-bold">${p.name}${me && p.id===me.id?' (شما)':''}</span>
+          <span class="text-warning font-bold">${toFa(p.score)}</span>
+        </div>`).join('')}
+    </div></div>
+  `;
+}
+
+function renderWaiting(state, me) {
+  lastPhase = 'waiting'; lockedAnswer = -1;
+  if (me && me.eliminated) return renderSpectator(state, me);
+  root.innerHTML = `
+    <header class="text-center mb-3">
+      <div class="text-5xl">⌛</div>
+      <h2 class="h-title">منتظر هاست…</h2>
+      <p class="text-sm opacity-70">${toFa(state.aliveCount)} بازیکن زنده</p>
+    </header>
+    <div class="card bg-base-200"><div class="card-body items-center text-center py-4">
+      <div class="text-sm opacity-70">رتبه فعلی</div>
+      <div class="text-3xl font-black text-warning">${me ? toFa(me.rank) : '—'}</div>
+    </div></div>
+  `;
+}
+
+function renderSpectator(state, me) {
+  root.innerHTML = `
+    <header class="text-center mb-3">
+      <div class="text-5xl mb-1">👻</div>
+      <h2 class="h-title">حالت تماشاگر</h2>
+      <p class="text-sm opacity-70">حذف شدی — تا پایان تماشا کن</p>
+    </header>
+    <div class="card bg-base-200"><div class="card-body p-4">
+      <div class="font-bold mb-2">${toFa(state.aliveCount)} زنده مانده</div>
+      <div class="grid grid-cols-3 gap-2">
+        ${state.players.filter((p) => !p.eliminated).map((p) => `
+          <div class="text-center">
+            <div class="avatar"><div class="w-12 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+            <div class="text-xs font-bold mt-1 truncate">${p.name}</div>
+          </div>`).join('')}
+      </div>
+    </div></div>
+  `;
+}
+
+function showElimOverlay(me) {
+  const o = el(`
+    <div class="elim-overlay">
+      <div class="drop-in">
+        <div class="avatar"><div class="w-32 rounded-full av-shake mx-auto"><img id="elim-av" src="${me.avatarUrl}" alt=""></div></div>
+        <div class="mt-4 text-4xl font-black" style="color:#fff;text-shadow:0 0 16px #000">حذف شدی! 💥</div>
+      </div>
+    </div>
+  `);
+  document.body.appendChild(o);
+  setTimeout(() => { const av = o.querySelector('#elim-av'); if (av) av.classList.add('fall-off'); }, 1500);
+  setTimeout(() => { o.remove(); }, 2400);
+}
+
+function renderEnded(state, me) {
+  if (lastShownEnded) return;
+  lastShownEnded = true;
+  if (pollHandle) clearInterval(pollHandle);
+
+  const meRes = (state.results || []).find((r) => r.id === playerId);
+  const meRank = meRes?.rank;
+  const myAchievements = meRes?.newlyEarned || [];
+  const top5 = (state.finalLeaderboard || []).slice(0, 5);
+
+  root.innerHTML = `
+    <header class="text-center mb-4">
+      <div class="text-6xl">${meRank === 1 && !meRes?.eliminated ? '🏆' : '🎯'}</div>
+      <h2 class="h-title">پایان بازی گروهی</h2>
+    </header>
+    <div class="card bg-base-200 mb-4"><div class="card-body p-4">
+      <div class="font-bold mb-2">۵ نفر برتر</div>
+      ${top5.map((p, i) => `
+        <div class="lb-row">
+          <span style="width:1.5rem;text-align:center">${['🥇','🥈','🥉'][i] || toFa(i+1)+'.'}</span>
+          <div class="avatar"><div class="w-10 rounded-full"><img src="${p.avatarUrl}" alt=""></div></div>
+          <span class="flex-1 font-bold">${p.name}${p.eliminated ? ' <span class="badge badge-error badge-sm">حذف</span>' : ''}</span>
+          <span class="text-warning font-bold">${toFa(p.score)}</span>
+        </div>`).join('')}
+    </div></div>
+  `;
+
+  showResultsModal({
+    title: 'پایان بازی گروهی',
+    score: meRes?.score || 0,
+    rank: meRank,
+    totalScores: state.results?.length,
+    achievementsEarned: myAchievements,
+  });
+}
+
+startPolling();
+renderDock('live');
+</script>
+</body>
+</html>

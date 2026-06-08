@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>وایب کاهوت — بازی انفرادی</title>
+<script>(function(){var t=localStorage.getItem('vibe_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&family=Lilita+One&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:['class','[data-theme="dark"]'],theme:{extend:{colors:{primary:'hsl(var(--p))','primary-content':'hsl(var(--pc))',secondary:'hsl(var(--s))',accent:'hsl(var(--a))',neutral:'hsl(var(--n))','base-100':'hsl(var(--b1))','base-200':'hsl(var(--b2))','base-300':'hsl(var(--b3))','base-content':'hsl(var(--bc))',info:'hsl(var(--in))',success:'hsl(var(--su))',warning:'hsl(var(--wa))',error:'hsl(var(--er))'},fontFamily:{sans:['Vazirmatn','sans-serif']}}}};
+</script>
+<link rel="stylesheet" href="./css/style.css">
+<script src="./js/config.js"></script>
+<script src="./js/app.js"></script>
+<script>if (window.requireProfile()) { document.documentElement.style.visibility='hidden'; }</script>
+</head>
+<body class="bg-base-100 text-base-content">
+<main id="root" class="max-w-md mx-auto px-4 pt-5"></main>
+
+<script>
+const root = document.getElementById('root');
+const COLORS = ['red', 'blue', 'yellow', 'green'];
+const STAGE_NAMES = [
+  'مقدمات و Vibe Coding',
+  'HTML',
+  'CSS و چیدمان',
+  'Git و GitHub',
+  'JavaScript و API',
+];
+
+const playerName  = localStorage.getItem('vibe_player_name');
+const playerStyle = localStorage.getItem('vibe_avatar_style') || 'bottts';
+const playerSeed  = localStorage.getItem('vibe_avatar_seed')  || playerName;
+const myAvatarUrl = avatarUrl(playerStyle, playerSeed);
+
+let profile = null;
+let questions = [];
+let qIndex = 0;
+let score = 0;
+let stage = 1;
+let deadline = 0;
+let timerId = null;
+let answered = false;
+
+function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
+
+// -------- Initial: load profile, then render stage selector --------
+async function init() {
+  try {
+    const r = await fetch(`${API}/api/profile/${encodeURIComponent(playerName)}`);
+    if (r.status === 404) {
+      // local profile is stale — clear it and bounce to login
+      localStorage.removeItem('vibe_player_name');
+      return location.replace('login.html');
+    }
+    profile = await r.json();
+    if (profile.player && profile.player.solo_stage) {
+      localStorage.setItem('vibe_solo_stage', String(profile.player.solo_stage));
+    }
+  } catch (e) {
+    // offline: fall back to cached stage
+    profile = { player: { solo_stage: parseInt(localStorage.getItem('vibe_solo_stage') || '1', 10) || 1 } };
+  }
+  renderStageSelector();
+}
+
+function renderStageSelector() {
+  const curStage = (profile && profile.player && profile.player.solo_stage) || 1;
+  root.innerHTML = `
+    <header class="text-center mb-4">
+      <h1 class="h-title">میدان نبرد</h1>
+      <p class="opacity-75 text-sm mt-1">۵ مرحله، هر مرحله ۱۰ سوال</p>
+    </header>
+
+    <div class="cr-card p-3 mb-4 flex items-center gap-3">
+      <span class="avatar-ring"><img src="${myAvatarUrl}" class="avatar-img" style="width:48px;height:48px;"></span>
+      <div class="flex-1">
+        <div class="font-extrabold">${playerName}</div>
+        <div class="text-xs opacity-70">مرحله فعلی: <b class="vk-num" style="color: hsl(var(--s))">${toFa(curStage)}</b> از ۵</div>
+      </div>
+    </div>
+
+    <div class="stage-list mb-4" id="stagesGrid"></div>
+
+    <div class="cr-panel p-3 text-center text-sm opacity-80">
+      با کسب امتیاز کافی، مرحله بعدی باز می‌شود. آماده‌ای؟
+    </div>
+  `;
+
+  const grid = document.getElementById('stagesGrid');
+  for (let i = 1; i <= 5; i++) {
+    const unlocked = i <= curStage;
+    const isCurrent = i === curStage;
+    const isCompleted = unlocked && !isCurrent;
+    const c = document.createElement('div');
+    c.className = 'stage-card' + (isCurrent ? ' current' : (isCompleted ? ' completed' : (unlocked ? ' unlocked' : ' locked')));
+    const statusIcon = isCurrent ? '⚔️' : isCompleted ? '✓' : '🔒';
+    const meta = isCurrent
+      ? '⚔️ مرحله جاری — برای شروع کلیک کن'
+      : isCompleted
+        ? '✓ تکمیل شده — می‌توانی دوباره بازی کنی'
+        : `🔒 برای باز شدن، مرحله ${toFa(i-1)} را با امتیاز کافی تکمیل کن`;
+    c.innerHTML = `
+      <div class="stage-num">${toFa(i)}</div>
+      <div class="stage-body">
+        <div class="stage-name">${STAGE_NAMES[i-1] || `مرحله ${toFa(i)}`}</div>
+        <div class="stage-meta">${meta}</div>
+      </div>
+      <div class="stage-status">${statusIcon}</div>
+    `;
+    if (unlocked) c.addEventListener('click', () => startStage(i));
+    grid.appendChild(c);
+  }
+}
+
+async function startStage(s) {
+  stage = s;
+  qIndex = 0;
+  score = 0;
+  // Try server-side questions for the stage first
+  try {
+    const r = await fetch(`${API}/api/solo/questions?stage=${s}`);
+    if (!r.ok) throw new Error('http ' + r.status);
+    const data = await r.json();
+    questions = data.questions || [];
+  } catch (e) {
+    // Fallback to client questions (only 10 — repeat as needed)
+    questions = (window.shuffleSoloQuestions ? window.shuffleSoloQuestions() : []).slice(0, 10);
+  }
+  if (!questions.length) {
+    alert('سوالی برای این مرحله یافت نشد');
+    return renderStageSelector();
+  }
+  renderQuestion();
+}
+
+function renderQuestion() {
+  clearInterval(timerId);
+  answered = false;
+  const q = questions[qIndex];
+  deadline = Date.now() + 10000;
+
+  root.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="badge badge-warning font-bold">مرحله ${toFa(stage)}</span>
+      <span class="badge badge-ghost">سوال ${toFa(qIndex + 1)} از ${toFa(questions.length)}</span>
+      <span class="badge badge-secondary font-bold vk-num">${toFa(score)} امتیاز</span>
+    </div>
+    <div class="timer-bar mb-4"><div id="bar" style="width:100%"></div></div>
+    <div class="cr-card mb-4">
+      <div class="p-4">
+        <div class="text-xl font-bold leading-relaxed text-center">${q.text}</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="opts"></div>
+  `;
+  const opts = root.querySelector('#opts');
+  q.options.forEach((text, i) => {
+    const b = el(`<button class="ans-btn ${COLORS[i]}">${text}</button>`);
+    b.addEventListener('click', () => choose(i));
+    opts.appendChild(b);
+  });
+
+  timerId = setInterval(() => {
+    const left = Math.max(0, deadline - Date.now());
+    const bar = document.getElementById('bar');
+    if (bar) bar.style.width = (left / 10000) * 100 + '%';
+    if (left <= 0) { clearInterval(timerId); if (!answered) choose(-1); }
+  }, 100);
+}
+
+function choose(i) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerId);
+  const q = questions[qIndex];
+  const leftMs = Math.max(0, deadline - Date.now());
+  const correct = i === q.correct;
+  let earned = 0;
+  if (correct) {
+    earned = 500 + Math.floor(500 * leftMs / 10000);
+    score += earned;
+  }
+  root.querySelectorAll('.ans-btn').forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === q.correct) b.classList.add('correct');
+    else if (idx === i) b.classList.add('wrong');
+  });
+  setTimeout(() => {
+    const banner = el(`<div class="alert ${correct ? 'alert-success' : 'alert-error'} mt-4">
+      <span class="font-black">${correct ? `✔ درست! +${toFa(earned)}` : (i === -1 ? '⏰ زمان تمام شد' : '✘ پاسخ نادرست')}</span>
+    </div>`);
+    root.appendChild(banner);
+    setTimeout(() => {
+      qIndex++;
+      if (qIndex >= questions.length) finish();
+      else renderQuestion();
+    }, 1100);
+  }, 200);
+}
+
+async function finish() {
+  let achievementsEarned = [];
+  let advanced = false;
+  let newStage = null;
+  try {
+    const r = await fetch(`${API}/api/solo/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: playerName, avatar: myAvatarUrl, score, stage }),
+    });
+    const data = await r.json();
+    achievementsEarned = data.achievements || [];
+    advanced = !!data.advanced;
+    newStage = data.newStage;
+  } catch (e) { /* offline OK */ }
+
+  // refresh cached profile (so the next render shows the new stage)
+  if (advanced && newStage) {
+    if (profile && profile.player) profile.player.solo_stage = newStage;
+    localStorage.setItem('vibe_solo_stage', String(newStage));
+  }
+
+  const extra = advanced
+    ? `<div class="mt-3 text-center p-3 rounded-2xl" style="background:hsl(var(--s)/.15);border:2px solid hsl(var(--s));">
+         <div class="text-2xl">🔓</div>
+         <div class="font-extrabold mt-1">مرحله ${toFa(newStage)} باز شد!</div>
+       </div>`
+    : (stage < 5
+        ? `<div class="mt-3 text-center text-sm opacity-75">برای باز کردن مرحله بعد، حداقل امتیاز ۳۰۰۰ لازم است.</div>`
+        : '');
+
+  root.innerHTML = '';
+  showResultsModal({
+    title: 'پایان مرحله!',
+    score,
+    achievementsEarned,
+    extraHtml: extra,
+    onClose: renderStageSelector,
+  });
+}
+
+init();
+renderDock('home');
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>هاست — وایب کاهوت</title>
+<script>(function(){var t=localStorage.getItem('vibe_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&family=Lilita+One&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:['class','[data-theme="dark"]'],theme:{extend:{colors:{primary:'hsl(var(--p))','primary-content':'hsl(var(--pc))',secondary:'hsl(var(--s))',accent:'hsl(var(--a))',neutral:'hsl(var(--n))','base-100':'hsl(var(--b1))','base-200':'hsl(var(--b2))','base-300':'hsl(var(--b3))','base-content':'hsl(var(--bc))',info:'hsl(var(--in))',success:'hsl(var(--su))',warning:'hsl(var(--wa))',error:'hsl(var(--er))'},fontFamily:{sans:['Vazirmatn','sans-serif']}}}};
+</script>
+<link rel="stylesheet" href="./css/style.css">
+<script src="./js/config.js"></script>
+<script src="./js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-base-100 text-base-content">
+<main id="root" class="max-w-4xl mx-auto px-4 pt-4"></main>
+
+<script>
+const COLORS = ['red', 'blue', 'yellow', 'green'];
+const root = document.getElementById('root');
+let pollHandle = null;
+let lastPhase = null;
+let lastQIndex = -1;
+let hostKey = localStorage.getItem(HOST_KEY_STORAGE_KEY) || HOST_KEY_DEFAULT;
+let confettiFired = false;
+// Tracks which player IDs we've already "killed" visually on host page.
+// Used to apply earthquake-then-remove to the alive panel during reveal.
+const eliminatedRendered = new Set();
+
+function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
+
+async function hostAction(path, body = {}) {
+  const r = await fetch(`${API}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Host-Key': hostKey },
+    body: JSON.stringify(body),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) { alert(data.error || 'خطا در درخواست هاست (کلید درست است؟)'); return null; }
+  return data;
+}
+
+async function poll() {
+  try {
+    const r = await fetch(`${API}/api/game/state`);
+    const s = await r.json();
+    render(s);
+  } catch (e) {}
+}
+function startPolling() { if (pollHandle) clearInterval(pollHandle); poll(); pollHandle = setInterval(poll, 800); }
+
+function controlsBar() {
+  return `
+    <div class="flex flex-wrap items-center gap-2 mb-4 card bg-base-200 p-3">
+      <input id="hostKey" class="input input-bordered input-sm flex-1 min-w-[8rem]" value="${hostKey}" placeholder="HOST_KEY">
+      <button id="saveKey" class="btn btn-ghost btn-sm">ذخیره کلید</button>
+      <button id="openLobby" class="btn btn-primary btn-sm">🔁 لابی جدید</button>
+      <button id="startQuiz"  class="btn btn-info btn-sm">🎮 شروع کوییز</button>
+      <button id="startBattle" class="btn btn-error btn-sm">⚔️ شروع بتل</button>
+    </div>
+  `;
+}
+
+function attachControls() {
+  document.getElementById('saveKey').addEventListener('click', () => {
+    hostKey = document.getElementById('hostKey').value.trim() || HOST_KEY_DEFAULT;
+    localStorage.setItem(HOST_KEY_STORAGE_KEY, hostKey);
+  });
+  document.getElementById('openLobby').addEventListener('click', async () => {
+    await hostAction('/api/host/open-lobby');
+    confettiFired = false; eliminatedRendered.clear();
+  });
+  document.getElementById('startQuiz').addEventListener('click', () => hostAction('/api/host/start-quiz', { count: 10 }));
+  document.getElementById('startBattle').addEventListener('click', () => hostAction('/api/host/start-battle', { count: 10 }));
+}
+
+// Reusable "alive avatars panel" — always shown during battle phases
+function alivePanel(state) {
+  const alive = state.players.filter((p) => !p.eliminated);
+  const eliminated = state.players.filter((p) => p.eliminated);
+  return `
+    <div class="card bg-base-200 mb-4"><div class="card-body p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold">⚔️ زنده‌ها (${toFa(alive.length)})</span>
+        ${state.mode === 'battle' ? `<span class="badge badge-ghost">حذف‌شدگان: ${toFa(eliminated.length)}</span>` : ''}
+      </div>
+      <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3" id="alive-grid">
+        ${alive.map((p) => `
+          <div class="text-center" id="alive-${p.id}">
+            <div class="avatar"><div class="w-14 sm:w-16 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+            <div class="text-xs mt-1 font-bold truncate">${p.name}</div>
+            ${p.hasAnswered ? '<span class="badge badge-success badge-xs mt-1">✓</span>' : ''}
+          </div>`).join('')}
+      </div>
+      ${eliminated.length ? `
+      <div class="divider my-2 text-xs">قبرستان</div>
+      <div class="graveyard">
+        ${eliminated.map((p) => `<img src="${p.avatarUrl}" alt="${p.name}" title="${p.name}">`).join('')}
+      </div>` : ''}
+    </div></div>
+  `;
+}
+
+function render(state) {
+  switch (state.phase) {
+    case 'lobby':    return renderLobby(state);
+    case 'question': return renderQuestion(state);
+    case 'reveal':   return renderReveal(state);
+    case 'between':  return renderBetween(state);
+    case 'waiting':  return renderWaiting(state);
+    case 'ended':    return renderEnded(state);
+  }
+}
+
+function renderLobby(state) {
+  lastPhase = 'lobby';
+  const players = state.players;
+  root.innerHTML = `
+    ${controlsBar()}
+    <header class="text-center mb-4">
+      <h1 class="h-title">لابی هاست</h1>
+      <p class="opacity-70">${toFa(players.length)} بازیکن وارد شده</p>
+    </header>
+    <div class="card bg-base-200"><div class="card-body p-4">
+      <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3" id="grid"></div>
+    </div></div>
+  `;
+  attachControls();
+  const grid = document.getElementById('grid');
+  if (!players.length) {
+    grid.innerHTML = '<div class="col-span-full text-center text-sm opacity-70">منتظر بازیکنان…</div>';
+    return;
+  }
+  players.forEach((p) => {
+    grid.appendChild(el(`
+      <div class="text-center">
+        <div class="avatar"><div class="w-16 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+        <div class="text-sm mt-1 font-bold truncate">${p.name}</div>
+      </div>
+    `));
+  });
+}
+
+function renderQuestion(state) {
+  const phaseChanged = lastPhase !== 'question' || state.questionIndex !== lastQIndex;
+  lastPhase = 'question'; lastQIndex = state.questionIndex;
+  const q = state.question || { text: '', options: ['','','',''] };
+  const answeredCount = state.players.filter((p) => p.hasAnswered).length;
+  const aliveCount = state.aliveCount;
+  const total = state.questionCount;
+
+  root.innerHTML = `
+    ${controlsBar()}
+    <div class="flex items-center justify-between mb-3">
+      <span class="badge badge-ghost">سوال ${toFa(state.questionIndex+1)} از ${toFa(total)} ${state.mode === 'battle' ? '• بتل ⚔️' : '• کوییز 🎮'}</span>
+      <span class="badge badge-warning font-bold">${toFa(answeredCount)} از ${toFa(aliveCount)} پاسخ دادند</span>
+    </div>
+    <div class="timer-bar mb-4"><div id="bar" style="width:${(state.timeLeftMs/10000)*100}%"></div></div>
+    <div id="qpanel" class="card bg-base-200 mb-4"><div class="card-body py-6 items-center">
+      <div class="text-3xl sm:text-4xl font-black leading-relaxed text-center">${q.text}</div>
+    </div></div>
+    <div class="grid grid-cols-2 gap-3 mb-4" id="opts"></div>
+    ${state.mode === 'battle' ? alivePanel(state) : ''}
+  `;
+  attachControls();
+  q.options.forEach((opt, i) => {
+    document.getElementById('opts').appendChild(el(`
+      <div class="ans-btn ${COLORS[i]}" style="min-height:6rem;font-size:1.4rem;">
+        <span class="ml-2 font-black opacity-80">${['A','B','C','D'][i]}</span>
+        <span>${opt}</span>
+      </div>`));
+  });
+  if (phaseChanged && state.mode === 'battle') {
+    document.getElementById('qpanel').classList.add('quake');
+  }
+}
+
+function renderReveal(state) {
+  lastPhase = 'reveal';
+  const q = state.question;
+  const correct = state.reveal?.correctIndex ?? -1;
+  const counts = state.reveal?.optionCounts || [0,0,0,0];
+  const totalAns = counts.reduce((a, b) => a + b, 0) || 1;
+
+  // Detect newly-eliminated players in THIS reveal (server marks them eliminated together).
+  const newlyElim = state.players.filter((p) => p.eliminated && !eliminatedRendered.has(p.id));
+
+  root.innerHTML = `
+    ${controlsBar()}
+    <div class="flex items-center justify-between mb-3">
+      <span class="badge badge-ghost">پاسخ صحیح</span>
+      ${state.mode === 'battle' ? `<span class="badge badge-warning font-bold">${toFa(state.aliveCount)} زنده</span>` : ''}
+    </div>
+    <div class="card bg-base-200 mb-4"><div class="card-body py-5"><div class="text-2xl sm:text-3xl font-black leading-relaxed text-center">${q.text}</div></div></div>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      ${q.options.map((opt, i) => {
+        const pct = Math.round((counts[i] / totalAns) * 100);
+        return `<div class="ans-btn ${COLORS[i]} ${i === correct ? 'correct' : 'wrong'}" style="min-height:5rem;flex-direction:column;">
+          <div class="font-black">${['A','B','C','D'][i]} — ${opt}</div>
+          <div class="text-xs mt-1 opacity-90">${toFa(counts[i])} پاسخ (${toFa(pct)}٪)</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="card bg-base-200 mb-4"><div class="card-body p-4">
+      <div class="font-bold mb-2">جدول امتیاز</div>
+      ${state.players.slice(0,5).map((p, i) => `
+        <div class="lb-row">
+          <span style="width:1.5rem;text-align:center">${['🥇','🥈','🥉'][i] || toFa(i+1)+'.'}</span>
+          <div class="avatar"><div class="w-9 rounded-full"><img id="rev-av-${p.id}" src="${p.avatarUrl}" alt=""></div></div>
+          <span class="flex-1 font-bold">${p.name}${p.eliminated ? ' <span class="badge badge-error badge-xs">حذف</span>' : ''}</span>
+          <span class="text-warning font-bold">${toFa(p.score)}</span>
+        </div>`).join('')}
+    </div></div>
+    ${state.mode === 'battle' ? alivePanelForReveal(state, newlyElim) : ''}
+  `;
+  attachControls();
+
+  if (state.mode === 'battle') {
+    // Apply simultaneous earthquake to the newly-eliminated avatar tiles,
+    // then fade them out. They'll re-appear in the graveyard on the next render.
+    newlyElim.forEach((p) => {
+      const tile = document.getElementById(`elim-tile-${p.id}`);
+      if (tile) {
+        const img = tile.querySelector('img');
+        if (img) img.classList.add('earthquake');
+      }
+    });
+    // After the earthquake, mark as rendered so they don't shake again next tick.
+    setTimeout(() => {
+      newlyElim.forEach((p) => {
+        const tile = document.getElementById(`elim-tile-${p.id}`);
+        if (tile) {
+          const img = tile.querySelector('img');
+          if (img) { img.classList.remove('earthquake'); img.classList.add('death-pop'); }
+        }
+      });
+      setTimeout(() => newlyElim.forEach((p) => eliminatedRendered.add(p.id)), 650);
+    }, 850);
+    // Pulse the survivors green
+    state.players.filter((p) => !p.eliminated).forEach((p) => {
+      const img = document.getElementById(`rev-av-${p.id}`);
+      if (img) img.classList.add('alive-pulse');
+    });
+  }
+}
+
+// Variant of alivePanel that highlights newly-eliminated tiles for shake animation.
+function alivePanelForReveal(state, newlyElim) {
+  const alive = state.players.filter((p) => !p.eliminated);
+  const oldElim = state.players.filter((p) => p.eliminated && eliminatedRendered.has(p.id));
+  const newIds = new Set(newlyElim.map((p) => p.id));
+  return `
+    <div class="card bg-base-200 mb-4"><div class="card-body p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold">⚔️ زنده‌ها (${toFa(alive.length)})</span>
+        <span class="badge badge-ghost">حذف‌شدگان: ${toFa(oldElim.length + newlyElim.length)}</span>
+      </div>
+      <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+        ${alive.map((p) => `
+          <div class="text-center alive-pulse">
+            <div class="avatar"><div class="w-14 sm:w-16 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+            <div class="text-xs mt-1 font-bold truncate">${p.name}</div>
+          </div>`).join('')}
+        ${newlyElim.map((p) => `
+          <div class="text-center" id="elim-tile-${p.id}">
+            <div class="avatar"><div class="w-14 sm:w-16 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+            <div class="text-xs mt-1 font-bold truncate text-error">${p.name}</div>
+          </div>`).join('')}
+      </div>
+      ${oldElim.length ? `
+      <div class="divider my-2 text-xs">قبرستان</div>
+      <div class="graveyard">
+        ${oldElim.map((p) => `<img src="${p.avatarUrl}" alt="${p.name}" title="${p.name}">`).join('')}
+      </div>` : ''}
+    </div></div>
+  `;
+}
+
+function renderBetween(state) {
+  lastPhase = 'between';
+  root.innerHTML = `
+    ${controlsBar()}
+    <header class="text-center mb-4">
+      <div class="text-5xl">⏭</div>
+      <h2 class="h-title">سوال بعدی…</h2>
+    </header>
+    <div class="card bg-base-200"><div class="card-body p-4">
+      <div class="font-bold mb-2">جدول امتیاز</div>
+      ${state.players.slice(0,10).map((p, i) => `
+        <div class="lb-row">
+          <span style="width:1.5rem;text-align:center">${['🥇','🥈','🥉'][i] || toFa(i+1)+'.'}</span>
+          <div class="avatar"><div class="w-10 rounded-full"><img src="${p.avatarUrl}" alt=""></div></div>
+          <span class="flex-1 font-bold">${p.name}</span>
+          <span class="text-warning font-bold">${toFa(p.score)}</span>
+        </div>`).join('')}
+    </div></div>
+  `;
+  attachControls();
+}
+
+function renderWaiting(state) {
+  lastPhase = 'waiting';
+  root.innerHTML = `
+    ${controlsBar()}
+    <header class="text-center mb-4">
+      <h2 class="h-title">آماده برای سوال بعدی</h2>
+      <p class="opacity-70">${toFa(state.aliveCount)} بازیکن زنده</p>
+    </header>
+    <div class="text-center mb-4">
+      <button id="next" class="btn btn-error btn-lg">سوال بعدی ▶</button>
+    </div>
+    ${alivePanel(state)}
+  `;
+  attachControls();
+  document.getElementById('next').addEventListener('click', () => hostAction('/api/host/next-question'));
+}
+
+function renderEnded(state) {
+  lastPhase = 'ended';
+  const top = (state.finalLeaderboard || []).slice(0, 3);
+  const all = state.finalLeaderboard || [];
+
+  root.innerHTML = `
+    ${controlsBar()}
+    <header class="text-center mb-4">
+      <div class="text-6xl">🏆</div>
+      <h2 class="h-title">پایان بازی</h2>
+      ${state.winnerName ? `<div class="mt-4"><span class="crown-drop">👑</span><div class="win-text mt-1 win-bounce">برنده: ${state.winnerName}</div></div>` : ''}
+    </header>
+    <div class="podium mb-6">
+      ${[1,0,2].map((rankIdx) => {
+        const p = top[rankIdx];
+        if (!p) return '<div></div>';
+        const cls = ['gold','silver','bronze'][rankIdx];
+        return `<div class="step ${cls}">
+          <div class="avatar"><div class="w-20 rounded-full mx-auto"><img src="${p.avatarUrl}" alt=""></div></div>
+          <div class="font-black mt-2">${p.name}</div>
+          <div class="text-sm font-bold">${toFa(p.score)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="card bg-base-200"><div class="card-body p-4">
+      <div class="font-bold mb-2">جدول کامل</div>
+      ${all.map((p, i) => `
+        <div class="lb-row">
+          <span style="width:1.5rem;text-align:center">${['🥇','🥈','🥉'][i] || toFa(i+1)+'.'}</span>
+          <div class="avatar"><div class="w-10 rounded-full"><img src="${p.avatarUrl}" alt=""></div></div>
+          <span class="flex-1 font-bold">${p.name}${p.eliminated ? ' <span class="badge badge-error badge-xs">حذف</span>' : ''}</span>
+          <span class="text-warning font-bold">${toFa(p.score)}</span>
+        </div>`).join('')}
+    </div></div>
+  `;
+  attachControls();
+  if (!confettiFired && window.confetti) {
+    confettiFired = true;
+    confetti({ particleCount: 200, spread: 100, origin: { y: .4 }, colors: ['#FFD700','#E21B3C','#1368CE','#26890C','#46178F'] });
+    setTimeout(() => confetti({ particleCount: 120, spread: 130, origin: { y: .55 } }), 600);
+  }
+}
+
+startPolling();
+renderDock('host');
+</script>
+</body>
+</html>

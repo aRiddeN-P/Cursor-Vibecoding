@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ورود — وایب کاهوت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Lilita+One&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="min-h-screen">
+  <main class="max-w-md mx-auto px-4 pt-8 pb-10">
+    <header class="text-center mb-6">
+      <div class="text-5xl mb-2">⚔️</div>
+      <h1 class="h-title text-3xl">وایب کاهوت</h1>
+      <p class="opacity-70 text-sm mt-1">برای شروع وارد شو یا حساب بساز</p>
+    </header>
+
+    <div class="cr-card p-4">
+      <!-- Tabs -->
+      <div class="flex gap-1 mb-4 p-1 rounded-2xl" style="background: hsl(var(--b1)); border: 1px solid hsl(var(--b3));">
+        <button id="tabLogin"    class="flex-1 py-2 rounded-xl font-bold transition cr-tab-active">ورود</button>
+        <button id="tabRegister" class="flex-1 py-2 rounded-xl font-bold transition opacity-60">ثبت‌نام</button>
+      </div>
+
+      <!-- LOGIN form -->
+      <form id="formLogin" class="space-y-3">
+        <div>
+          <label class="text-xs opacity-75">نام کاربری</label>
+          <input id="loginName" type="text" maxlength="24" class="input input-bordered w-full bg-base-100" placeholder="نام خود را وارد کنید" />
+        </div>
+        <div>
+          <label class="text-xs opacity-75">رمز عبور</label>
+          <input id="loginPass" type="password" minlength="4" class="input input-bordered w-full bg-base-100" placeholder="حداقل ۴ کاراکتر" />
+        </div>
+        <div id="loginErr" class="text-error text-sm hidden"></div>
+        <button type="submit" id="btnLogin" class="cr-btn w-full">ورود</button>
+      </form>
+
+      <!-- REGISTER form (hidden by default) -->
+      <form id="formRegister" class="space-y-3 hidden">
+        <div>
+          <label class="text-xs opacity-75">نام کاربری</label>
+          <input id="regName" type="text" maxlength="24" class="input input-bordered w-full bg-base-100" placeholder="نام جدید" />
+        </div>
+        <div>
+          <label class="text-xs opacity-75">رمز عبور</label>
+          <input id="regPass" type="password" minlength="4" class="input input-bordered w-full bg-base-100" placeholder="حداقل ۴ کاراکتر" />
+        </div>
+        <div>
+          <label class="text-xs opacity-75">انتخاب آواتار</label>
+          <div class="text-[11px] opacity-60 mb-1">آواتارهای قفل‌دار با کسب دستاورد یا گذشت زمان از ثبت‌نام باز می‌شوند.</div>
+          <div id="regAvatars" class="avatar-grid mt-1" style="max-height: 18rem; overflow-y: auto; background: hsl(var(--b1)); padding: .5rem; border-radius: 12px;"></div>
+        </div>
+        <div id="regErr" class="text-error text-sm hidden"></div>
+        <button type="submit" id="btnRegister" class="cr-btn cr-btn-gold w-full">ثبت‌نام و شروع</button>
+      </form>
+    </div>
+
+    <div class="text-center text-xs opacity-60 mt-6">
+      با ثبت‌نام، نام و رمز شما به صورت محلی روی سرور کلاس ذخیره می‌شود.
+    </div>
+  </main>
+
+  <style>
+    .cr-tab-active {
+      background: linear-gradient(180deg, #F4A623, #cc7d10);
+      color: #fff;
+      text-shadow: 0 1px 0 rgba(0,0,0,.4);
+      box-shadow: inset 0 1px 0 hsla(0,0%,100%,.3), inset 0 -2px 0 hsla(0,0%,0%,.3);
+    }
+  </style>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Already logged in? Go straight to next page.
+    if (window.hasProfile()) {
+      const params = new URLSearchParams(location.search);
+      const next = params.get('next') || 'index.html';
+      location.replace(next);
+    }
+
+    // ---- Tabs ----
+    const tabLogin = document.getElementById('tabLogin');
+    const tabReg   = document.getElementById('tabRegister');
+    const formLogin = document.getElementById('formLogin');
+    const formReg   = document.getElementById('formRegister');
+    function showTab(which) {
+      const isLogin = which === 'login';
+      tabLogin.classList.toggle('cr-tab-active', isLogin);
+      tabLogin.classList.toggle('opacity-60', !isLogin);
+      tabReg.classList.toggle('cr-tab-active', !isLogin);
+      tabReg.classList.toggle('opacity-60', isLogin);
+      formLogin.classList.toggle('hidden', !isLogin);
+      formReg.classList.toggle('hidden', isLogin);
+    }
+    tabLogin.addEventListener('click', () => showTab('login'));
+    tabReg.addEventListener('click', () => { showTab('register'); ensureGridRendered(); });
+
+    // Start on the Register tab if no one is logged in — most first-time
+    // visitors will be signing up, and this avoids an extra click.
+    showTab('register');
+
+    // ---- Register avatar grid: render eagerly + hide locked entries ----
+    let selectedAvatar = null;
+    let gridApi = null;
+    function ensureGridRendered() {
+      if (gridApi) return;
+      const container = document.getElementById('regAvatars');
+      // For a brand-new user there's no profile yet — only "free" avatars are
+      // truly available, and we hide locked ones from the picker entirely.
+      gridApi = window.renderAvatarGrid(container, {}, null, (item) => {
+        selectedAvatar = item;
+      }, { hideLocked: true });
+      const firstFree = (window.AVATAR_CATALOG || []).find(a => a.unlock === 'free');
+      if (firstFree) {
+        selectedAvatar = firstFree;
+        gridApi.setSelected(firstFree.id);
+      }
+    }
+    // Render the avatar grid right away so it's ready (even when the user
+    // arrives directly on the Register tab via the UI).
+    ensureGridRendered();
+
+    // ---- Helpers ----
+    function showErr(el, msg) { el.textContent = msg; el.classList.remove('hidden'); }
+    function hideErr(el) { el.textContent = ''; el.classList.add('hidden'); }
+    function persistAndGo(data) {
+      localStorage.setItem('vibe_player_name',  data.name);
+      if (data.avatar_style) localStorage.setItem('vibe_avatar_style', data.avatar_style);
+      if (data.avatar_seed)  localStorage.setItem('vibe_avatar_seed',  data.avatar_seed);
+      if (data.soloStage)    localStorage.setItem('vibe_solo_stage',   String(data.soloStage));
+      const params = new URLSearchParams(location.search);
+      const next = params.get('next') || 'index.html';
+      location.replace(next);
+    }
+
+    // ---- LOGIN ----
+    formLogin.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      hideErr(document.getElementById('loginErr'));
+      const name = document.getElementById('loginName').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      if (!name) return showErr(document.getElementById('loginErr'), 'نام لازم است');
+      if (!pass) return showErr(document.getElementById('loginErr'), 'رمز عبور لازم است');
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true; btn.textContent = 'در حال ورود...';
+      try {
+        const resp = await fetch(`${window.API}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, password: pass })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'خطا در ورود');
+        persistAndGo({
+          name: data.name,
+          avatar_style: data.avatar_style,
+          avatar_seed:  data.avatar_seed,
+          soloStage:    data.soloStage,
+        });
+      } catch (e) {
+        showErr(document.getElementById('loginErr'), e.message);
+      } finally {
+        btn.disabled = false; btn.textContent = 'ورود';
+      }
+    });
+
+    // ---- REGISTER ----
+    formReg.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      hideErr(document.getElementById('regErr'));
+      const name = document.getElementById('regName').value.trim();
+      const pass = document.getElementById('regPass').value;
+      if (!name) return showErr(document.getElementById('regErr'), 'نام لازم است');
+      if (pass.length < 4) return showErr(document.getElementById('regErr'), 'رمز عبور باید حداقل ۴ کاراکتر باشد');
+      if (!selectedAvatar) ensureGridRendered();
+      const av = selectedAvatar || (window.AVATAR_CATALOG || [])[0];
+      const btn = document.getElementById('btnRegister');
+      btn.disabled = true; btn.textContent = 'در حال ثبت‌نام...';
+      try {
+        const resp = await fetch(`${window.API}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            password: pass,
+            avatarStyle: av.style,
+            avatarSeed:  av.seed,
+          })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'خطا در ثبت‌نام');
+        persistAndGo({
+          name: data.name,
+          avatar_style: av.style,
+          avatar_seed:  av.seed,
+          soloStage: data.soloStage || 1,
+        });
+      } catch (e) {
+        showErr(document.getElementById('regErr'), e.message);
+      } finally {
+        btn.disabled = false; btn.textContent = 'ثبت‌نام و شروع';
+      }
+    });
+  </script>
+</body>
+</html>
