@@ -1,0 +1,276 @@
+/* ============================================
+   Dakhlyar — Avatar picker styles
+   Reusable across profile (and future pages).
+   ============================================ */
+
+/* ---- The header avatar that triggers the picker ---- */
+.avatar-img {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--primary-soft);
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.avatar-img:hover { transform: scale(1.04); box-shadow: var(--shadow-md); }
+
+/* ---- Picker overlay (no position:fixed — full-viewport flex) ---- */
+.av-overlay {
+  position: fixed; inset: 0;
+  background: rgba(13, 46, 30, 0.55);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 250;
+  padding: 24px 12px;
+  overflow-y: auto;
+}
+.av-overlay.open { display: flex; }
+
+.av-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  padding: 18px 16px 22px;
+  position: relative;
+  box-shadow: var(--shadow-md);
+  min-height: 200px;
+}
+.av-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-family: inherit;
+}
+.av-close:hover { background: var(--bg); color: var(--dark); }
+
+.av-title {
+  margin: 0 0 4px;
+  text-align: center;
+  font-size: 16px;
+  color: var(--dark);
+  font-weight: 700;
+}
+
+.av-current-wrap {
+  text-align: center;
+  margin: 8px 0 12px;
+}
+.av-current-img {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--primary-soft);
+  border: 3px solid var(--primary);
+  box-shadow: 0 4px 14px rgba(26, 92, 58, 0.15);
+}
+.av-current-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* ---- Tabs ---- */
+.av-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin: 4px 0 14px;
+}
+.av-tab {
+  flex: 1;
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-weight: 700;
+  transition: background .15s, color .15s;
+}
+.av-tab.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+.av-tab:hover:not(.active) { color: var(--dark); }
+
+.av-pane { display: none; }
+.av-pane.active { display: block; }
+
+/* ---- Avatar grid ---- */
+.av-section-title {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin: 14px 0 8px;
+}
+.av-section-title:first-child { margin-top: 4px; }
+
+.av-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.av-cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: var(--bg);
+  padding: 0;
+  font-family: inherit;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .12s, border-color .12s;
+}
+.av-cell:hover { transform: scale(1.05); }
+.av-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.av-cell.selected { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+.av-cell.locked  { cursor: not-allowed; }
+.av-cell.locked::after {
+  content: '🔒';
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 46, 30, 0.55);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  border-radius: 50%;
+}
+.av-cell.locked:hover { transform: none; }
+
+.av-cta-buy {
+  display: block;
+  margin: 12px auto 0;
+  padding: 9px 18px;
+  background: var(--accent);
+  color: var(--dark);
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.av-cta-buy:hover { filter: brightness(0.95); }
+
+/* ---- Upload pane ---- */
+.av-upload-lock {
+  text-align: center;
+  padding: 24px 16px;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+}
+.av-upload-lock .ico {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.av-upload-lock h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--dark);
+}
+.av-upload-lock p {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+
+.av-upload-pane {
+  text-align: center;
+  padding: 4px;
+}
+.av-preview {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: var(--bg) center/cover no-repeat;
+  margin: 6px auto 12px;
+  border: 2px solid var(--border);
+}
+.av-upload-actions {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.av-upload-actions button {
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.av-upload-actions button:hover { background: var(--primary-dark); }
+.av-upload-actions button:disabled { background: #c8cfdb; cursor: not-allowed; }
+.av-upload-actions .ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.av-upload-actions .ghost:hover { background: var(--bg); }
+
+.av-delete-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--danger);
+  font-size: 12px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  text-decoration: underline;
+}
+.av-delete-link:hover { color: #8e2c20; }
+
+.av-upload-note {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  border-radius: 10px;
+  font-size: 11.5px;
+  line-height: 1.8;
+}
+
+/* ---- Tooltip for locked avatars (tiny) ---- */
+.av-tooltip {
+  position: fixed;
+  background: var(--dark);
+  color: #fff;
+  font-size: 11.5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 320;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .12s;
+}
+.av-tooltip.show { opacity: 1; }

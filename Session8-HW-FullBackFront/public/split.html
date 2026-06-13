@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>دنگ و دونگ — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/split.css?v=20260612p12d" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header" id="list-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.history.back()" aria-label="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+    <div class="header-title">دنگ و دونگ</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-add-group" aria-label="گروه جدید">
+        <i class="ti ti-plus"></i>
+      </button>
+    </div>
+  </header>
+
+  <header class="app-header" id="detail-header" style="display:none;">
+    <div class="header-right">
+      <button type="button" class="icon-btn" id="btn-back-list" aria-label="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+    <div class="header-title" id="detail-header-title">گروه</div>
+    <div class="header-left"></div>
+  </header>
+
+  <main class="page-content" id="main-content">
+    <div id="split-loading" class="split-loading">در حال بارگذاری…</div>
+
+    <div id="view-list" style="display:none;">
+      <div class="split-list-wrap" id="groups-list"></div>
+      <div id="groups-empty" class="split-empty" style="display:none;">
+        <div class="icon">👥</div>
+        <h3>هنوز گروهی نساخته‌اید</h3>
+        <p>هزینه‌های مشترک را ثبت کنید و ببینید چه کسی به چه کسی بدهکار است.</p>
+        <button type="button" class="split-empty-btn" id="btn-empty-group">ایجاد اولین گروه</button>
+      </div>
+    </div>
+
+    <div id="view-detail" style="display:none;">
+      <div class="split-detail-header">
+        <div class="split-detail-name" id="detail-name">—</div>
+        <div class="split-detail-desc" id="detail-desc"></div>
+      </div>
+      <div class="split-tabs">
+        <button type="button" class="split-tab active" data-tab="expenses">هزینه‌ها</button>
+        <button type="button" class="split-tab" data-tab="settle">تسویه</button>
+        <button type="button" class="split-tab" data-tab="members">اعضا</button>
+      </div>
+
+      <div class="split-panel active" id="panel-expenses">
+        <div id="expenses-list"></div>
+      </div>
+      <div class="split-panel" id="panel-settle">
+        <div class="split-section-title">تسویه‌های پیشنهادی</div>
+        <div id="suggested-settlements"></div>
+        <div class="split-section-title">تسویه‌های انجام‌شده</div>
+        <div id="completed-settlements"></div>
+      </div>
+      <div class="split-panel" id="panel-members">
+        <div class="split-invite-row" id="invite-row" style="display:none;">
+          <button type="button" class="split-invite-btn" id="btn-copy-link"><i class="ti ti-copy"></i> کپی لینک</button>
+          <button type="button" class="split-invite-btn" id="btn-share-link"><i class="ti ti-share"></i> اشتراک</button>
+        </div>
+        <div id="members-list"></div>
+        <button type="button" class="dk-sheet-btn secondary split-add-member-btn" id="btn-add-member" style="display:none;">افزودن عضو</button>
+      </div>
+    </div>
+  </main>
+
+  <button type="button" class="fab" id="fab-add-expense" style="display:none;" aria-label="افزودن هزینه">
+    <i class="ti ti-plus"></i>
+  </button>
+
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+
+  <!-- New group -->
+  <div class="dk-sheet" id="group-form-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>گروه جدید</h3>
+      <button type="button" class="close-btn" data-close-sheet="group-form-sheet" aria-label="بستن"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label for="gf-name">نام گروه</label>
+        <input type="text" id="gf-name" maxlength="60" placeholder="مثلاً سفر مشهد" />
+      </div>
+      <div class="fld">
+        <label for="gf-desc">توضیحات (اختیاری)</label>
+        <textarea id="gf-desc" rows="2" placeholder="توضیح کوتاه…"></textarea>
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="btn-save-group">ایجاد گروه</button>
+    </div>
+  </div>
+
+  <!-- Add expense -->
+  <div class="dk-sheet" id="expense-form-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>ثبت هزینه</h3>
+      <button type="button" class="close-btn" data-close-sheet="expense-form-sheet" aria-label="بستن"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label for="ef-title">عنوان</label>
+        <input type="text" id="ef-title" maxlength="60" placeholder="مثلاً شام رستوران" />
+      </div>
+      <div class="fld">
+        <label for="ef-amount">مبلغ کل</label>
+        <div class="dk-amount-wrap">
+          <input type="text" inputmode="numeric" id="ef-amount" placeholder="۰" autocomplete="off" />
+          <div class="formatted" id="ef-amount-fmt">۰ تومان</div>
+        </div>
+      </div>
+      <div class="fld">
+        <label>پرداخت‌کننده</label>
+        <div class="split-member-pills" id="ef-payer-pills"></div>
+      </div>
+      <div class="fld">
+        <label for="ef-date">تاریخ</label>
+        <input type="date" id="ef-date" />
+      </div>
+      <div class="fld">
+        <label>نحوه تقسیم</label>
+        <div class="split-toggle">
+          <button type="button" class="active" data-split="equal">مساوی</button>
+          <button type="button" data-split="custom">دستی</button>
+        </div>
+        <div class="split-custom-shares" id="ef-custom-shares"></div>
+      </div>
+      <div class="fld">
+        <label for="ef-note">یادداشت (اختیاری)</label>
+        <input type="text" id="ef-note" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="btn-save-expense">ثبت هزینه</button>
+    </div>
+  </div>
+
+  <!-- Add member -->
+  <div class="dk-sheet" id="member-form-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>افزودن عضو</h3>
+      <button type="button" class="close-btn" data-close-sheet="member-form-sheet" aria-label="بستن"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label for="mf-mobile">شماره موبایل (اختیاری)</label>
+        <input type="tel" id="mf-mobile" placeholder="09121234567" />
+        <div class="helper" id="mf-lookup-hint"></div>
+      </div>
+      <div class="fld">
+        <label for="mf-name">نام نمایشی</label>
+        <input type="text" id="mf-name" placeholder="نام عضو" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="btn-save-member">افزودن</button>
+    </div>
+  </div>
+
+  <!-- Settle -->
+  <div class="dk-sheet" id="settle-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>ثبت تسویه</h3>
+      <button type="button" class="close-btn" data-close-sheet="settle-sheet" aria-label="بستن"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dk-sheet-body">
+      <p class="split-settle-desc" id="settle-desc"></p>
+      <label class="split-check-row">
+        <input type="checkbox" id="settle-create-tx" />
+        <span>ثبت به عنوان تراکنش در دخلیار</span>
+      </label>
+      <div class="fld" id="settle-date-row" style="display:none;">
+        <label for="settle-date">تاریخ تراکنش</label>
+        <input type="date" id="settle-date" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot split-settle-foot">
+      <button type="button" class="dk-sheet-btn secondary" id="btn-settle-only">فقط ثبت تسویه</button>
+      <button type="button" class="dk-sheet-btn primary" id="btn-settle-tx" style="display:none;">ثبت + تراکنش</button>
+    </div>
+  </div>
+
+  <div id="toast" class="split-toast" style="display:none;"></div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/split.js?v=20260612p12d"></script>
+  <script src="/js/bottom-nav.js"></script>
+</body>
+</html>

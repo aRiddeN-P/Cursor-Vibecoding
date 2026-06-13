@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>پیشنهاد تخصصی — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/expert.css?v=20260612p10" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.location.href='/dashboard.html'"
+              aria-label="بازگشت" title="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">پیشنهاد تخصصی</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-filter-toggle" aria-label="فیلتر" title="فیلتر">
+        <i class="ti ti-filter"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content" id="main-content"></main>
+
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+
+  <div class="dk-sheet" id="detail-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="detail-title">جزئیات پیشنهاد</h3>
+      <button type="button" class="close-btn" data-close-sheet="detail-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="detail-body"></div>
+    <div class="dk-sheet-foot" id="detail-foot" style="display:none;"></div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/subscription-gate.js"></script>
+  <script src="/js/expert.js?v=20260612p10"></script>
+  <script src="/js/bottom-nav.js"></script>
+</body>
+</html>

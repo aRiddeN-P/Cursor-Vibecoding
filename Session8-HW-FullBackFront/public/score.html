@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>امتیاز مالی — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/score.css?v=20260612p11" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body score-page">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.history.back()"
+              aria-label="بازگشت" title="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+    <div class="header-title">امتیاز مالی</div>
+    <div class="header-left"></div>
+  </header>
+
+  <main class="page-content" id="main-content">
+    <div id="score-loading" class="score-loading">در حال بارگذاری…</div>
+    <div id="score-app" style="display:none;">
+
+      <div class="score-arc-large-wrap">
+        <svg id="score-arc-lg" class="score-arc-large" width="200" height="200" aria-hidden="true"></svg>
+        <div class="score-arc-num" id="score-num">۰</div>
+        <div class="score-arc-label" id="score-label">—</div>
+      </div>
+
+      <section class="score-history-section">
+        <h3>تاریخچه ۶ ماهه</h3>
+        <svg id="score-history-chart" class="score-history-chart"></svg>
+        <div class="score-best-month" id="score-best-month">—</div>
+      </section>
+
+      <section class="score-section">
+        <h3>تفکیک امتیاز</h3>
+        <div class="score-breakdown-list" id="score-breakdown"></div>
+      </section>
+
+      <section class="score-section">
+        <h3>بینش‌های رفتاری</h3>
+        <div id="insights-list"></div>
+      </section>
+
+      <section class="score-section">
+        <h3>پیشنهاد برای بهبود</h3>
+        <div id="tips-list"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/score.js?v=20260612p11"></script>
+</body>
+</html>

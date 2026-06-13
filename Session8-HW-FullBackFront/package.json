@@ -1,0 +1,42 @@
+{
+  "name": "dakhlyar",
+  "version": "1.0.0",
+  "description": "دخلیار — اپلیکیشن مدیریت مالی شخصی (Persian Personal Finance Management App)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "keywords": [
+    "dakhlyar",
+    "finance",
+    "persian",
+    "farsi",
+    "personal-finance"
+  ],
+  "author": "Dakhlyar Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "jalaali-js": "^1.2.8",
+    "multer": "^2.0.1",
+    "nodemailer": "^6.9.15",
+    "papaparse": "^5.5.3",
+    "pdfkit": "^0.19.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "web-push": "^3.6.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "sharp": "^0.35.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

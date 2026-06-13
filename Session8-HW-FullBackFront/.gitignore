@@ -1,0 +1,17 @@
+node_modules/
+.env
+*.db
+*.db-shm
+*.db-wal
+npm-debug.log*
+.DS_Store
+cookies.txt
+
+# User/admin uploads — not part of source control
+server/uploads/avatars/*
+!server/uploads/avatars/.gitkeep
+server/uploads/banners/*
+!server/uploads/banners/.gitkeep
+server/uploads/stories/*
+!server/uploads/stories/.gitkeep
+!server/uploads/stories/placeholder.jpg

@@ -1,0 +1,690 @@
+/* ========== Dakhlyar — Mobile-first RTL stylesheet ========== */
+/* Brand palette (Phase 2, updated):
+   - سبز زمردی (primary):  #1A5C3A
+   - تیره (dark text):      #0D2E1E
+   - طلایی (accent/coin):   #F0B429
+   - سبز روشن (surface):    #ECFDF5
+*/
+
+:root {
+  --bg: #F3F7F4;
+  --surface: #ffffff;
+  --primary: #1A5C3A;
+  --primary-dark: #134528;
+  --primary-soft: #ECFDF5;
+  --accent: #F0B429;
+  --accent-dark: #C8971B;
+  --dark: #0D2E1E;
+  --text: #0D2E1E;
+  --text-muted: #5b6b62;
+  --border: #d6e2db;
+  --danger: #c0392b;
+  --danger-soft: #fdecec;
+  --warning-bg: #fff5e1;
+  --warning-border: #f5c87a;
+  --warning-text: #7a4d00;
+  --success: #1A5C3A;
+  --success-soft: #ECFDF5;
+  --radius: 12px;
+  --shadow-sm: 0 2px 8px rgba(13, 46, 30, 0.05);
+  --shadow-md: 0 10px 28px rgba(13, 46, 30, 0.10);
+
+  /* ── Phase 4 — DLS tokens (used by the new app shell: header, page-content,
+     cards, buttons, empty-state, bottom-nav). Names are namespaced with
+     `--color-` / `--radius-` / `--shadow-` to coexist with the legacy
+     tokens above without breaking the existing auth/profile/messages CSS. */
+  --color-primary:  #1A5C3A;
+  --color-accent:   #F0B429;
+  --color-dark:     #0D2E1E;
+  --color-surface:  #ECFDF5;
+  --color-bg:       #F5F7FA;
+  --color-white:    #FFFFFF;
+  --color-text-1:   #0D2E1E;
+  --color-text-2:   #4B5563;
+  --color-text-3:   #9CA3AF;
+  --color-border:   #E8EAF0;
+  --color-danger:   #DC2626;
+  --color-warning:  #F59E0B;
+  --color-success:  #10B981;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --shadow-md-4: 0 4px 16px rgba(13, 46, 30, 0.10);
+  --shadow-lg-4: 0 8px 32px rgba(13, 46, 30, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Vazirmatn", "IRANSans", Tahoma, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  direction: rtl;
+  min-height: 100vh;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Layout ---------- */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+/* Brand mark — uses the official Dakhlyar logo PNG.
+   The image already has a rounded green background baked in, so we just
+   render it via background-image. Sized at 44×44 by default and 84×84
+   when the .lg modifier is applied. */
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  background: url("/img/logo.png") center/contain no-repeat;
+  flex-shrink: 0;
+}
+.brand-mark.lg {
+  width: 92px;
+  height: 92px;
+  filter: drop-shadow(0 14px 28px rgba(26, 92, 58, 0.22));
+}
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: 24px 22px 22px;
+}
+
+.card h1 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+.card .subtitle {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ---------- Form ---------- */
+
+.field {
+  margin-bottom: 14px;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.field .hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fafbfd;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.12);
+}
+.input.is-invalid {
+  border-color: var(--danger);
+  background: #fff7f7;
+}
+.input.is-valid {
+  border-color: var(--success);
+}
+.input[dir="ltr"], .input.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.toggle-pass {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 8px;
+}
+.toggle-pass:hover { background: var(--primary-soft); color: var(--primary); }
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+  opacity: .75;
+}
+.input-wrap .input { padding-left: 38px; }
+
+/* ---------- persian-datepicker theme overrides ---------- */
+.datepicker-plot-area {
+  font-family: "Vazirmatn", "IRANSans", Tahoma, Arial, sans-serif !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 28px rgba(20, 30, 60, 0.15) !important;
+  border: 1px solid var(--border) !important;
+  overflow: hidden;
+}
+.datepicker-plot-area .datepicker-navigator {
+  background: var(--primary) !important;
+}
+.datepicker-plot-area .datepicker-navigator div {
+  color: #fff !important;
+}
+.datepicker-plot-area table.datepicker-day-view td span.selected,
+.datepicker-plot-area .datepicker-month-view .month-item.selected,
+.datepicker-plot-area .datepicker-year-view .year-item.selected {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+.datepicker-plot-area table.datepicker-day-view td span:hover,
+.datepicker-plot-area .datepicker-month-view .month-item:hover,
+.datepicker-plot-area .datepicker-year-view .year-item:hover {
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+  border-radius: 8px !important;
+}
+.datepicker-plot-area .datepicker-day-view .table-days td.disabled span {
+  color: #c8cfdb !important;
+  background: transparent !important;
+}
+
+.error-text {
+  display: none;
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.error-text.show { display: block; }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, transform .05s, box-shadow .15s;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-primary:active:not(:disabled) { transform: translateY(1px); }
+.btn-primary:disabled {
+  background: #c8cfdb;
+  cursor: not-allowed;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--primary-soft); border-color: var(--primary-soft); }
+.btn-link {
+  background: transparent;
+  border: 0;
+  color: var(--primary);
+  padding: 6px 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+}
+.btn-link:disabled { color: #a4adbb; cursor: not-allowed; }
+
+.actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.actions-row .btn { flex: 1; }
+
+.center-text { text-align: center; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.muted { color: var(--text-muted); font-size: 13px; }
+
+/* ---------- Toast / Banner ---------- */
+
+.toast {
+  position: fixed;
+  top: 16px;
+  inset-inline: 16px;
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid #b9e0c9;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: #f3c2c2;
+}
+
+.banner {
+  display: none;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+.banner.show { display: block; }
+
+/* ---------- Stepper ---------- */
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.step-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e7ebf3;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background .15s, color .15s;
+}
+.step-line {
+  flex: 0 0 32px;
+  height: 2px;
+  background: #e7ebf3;
+}
+.step-dot.active {
+  background: var(--primary);
+  color: #fff;
+}
+.step-dot.done {
+  background: var(--success);
+  color: #fff;
+}
+
+.wizard-step { display: none; }
+.wizard-step.active { display: block; }
+
+/* ---------- OTP boxes ---------- */
+
+.otp-row {
+  display: flex;
+  gap: 8px;
+  direction: ltr;
+  justify-content: center;
+  margin: 14px 0;
+}
+.otp-input {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfd;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.otp-input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.12);
+}
+.otp-input.filled { border-color: var(--primary); }
+
+.countdown {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+.countdown strong { color: var(--primary); }
+.countdown.zero strong { color: var(--danger); }
+
+/* ---------- Password strength ---------- */
+
+.strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.strength-bar > span {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  background: #e7ebf3;
+  transition: background .15s;
+}
+.strength-bar.s1 > span:nth-child(-n+1) { background: var(--danger); }
+.strength-bar.s2 > span:nth-child(-n+2) { background: #e6a23c; }
+.strength-bar.s3 > span:nth-child(-n+3) { background: #e6c93c; }
+.strength-bar.s4 > span:nth-child(-n+4) { background: var(--success); }
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+.checklist li::before {
+  content: "○";
+  color: #b6bdcc;
+  font-size: 14px;
+}
+.checklist li.ok { color: var(--success); }
+.checklist li.ok::before { content: "✓"; color: var(--success); }
+
+.match-indicator {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.match-indicator.ok { color: var(--success); }
+.match-indicator.bad { color: var(--danger); }
+
+/* ---------- Footer link ---------- */
+
+.foot {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.foot a { font-weight: 600; }
+
+/* ---------- Forgot password section ---------- */
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 0;
+}
+
+/* ---------- Small screens tweak ---------- */
+
+@media (max-width: 360px) {
+  .otp-input { width: 38px; height: 48px; font-size: 18px; }
+  .card { padding: 20px 16px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Phase 4 — App shell (header + page-content + cards + buttons +
+   empty-state). All rules are SCOPED to a Phase-4 container (.app-header
+   for the top bar, .page-content for the body) so they never bleed into
+   legacy auth/profile/messages pages — those continue to use the older
+   .topbar / .card / .btn-primary rules defined earlier in this file.
+   ════════════════════════════════════════════════════════════════════════ */
+
+.app-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 60px;
+  background: var(--color-white);
+  border-bottom: 0.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+.app-header .header-right,
+.app-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-header .header-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-1);
+}
+.app-header .icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-2);
+  font-size: 20px;
+  position: relative;
+  padding: 0;
+  font-family: inherit;
+}
+.app-header .icon-btn:hover { background: var(--color-surface); }
+.app-header .icon-btn i { font-size: 20px; line-height: 1; }
+.app-header .badge {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: var(--color-danger);
+  color: var(--color-white);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Body container — used by every Phase-4 page. Bodies that load this file
+   AND use .page-content automatically pick up the new layout. We also push
+   the body padding via a body-level class so the fixed header/nav don't
+   overlap the content. */
+body.app-shell-body {
+  background: var(--color-bg);
+  padding-top: 60px;
+  padding-bottom: 80px;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-content {
+  padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.page-content .card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--color-border);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  max-width: none;
+}
+
+.page-content .section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-1);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.page-content .section-title::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 16px;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
+.page-content .btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Vazirmatn', sans-serif;
+  width: 100%;
+  transition: background 0.15s;
+}
+.page-content .btn-primary:hover { background: #165233; }
+
+.page-content .btn-secondary {
+  background: var(--color-white);
+  color: var(--color-text-2);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Vazirmatn', sans-serif;
+  width: 100%;
+  transition: background 0.15s;
+}
+.page-content .btn-secondary:hover { background: var(--color-bg); }
+
+.page-content .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.page-content .empty-state i {
+  font-size: 48px;
+  color: var(--color-text-3);
+}
+.page-content .empty-state h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-2);
+  margin: 0;
+}
+.page-content .empty-state p {
+  font-size: 14px;
+  color: var(--color-text-3);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 300px;
+}
+
+/* Floating Action Button — used by transactions page (and any future page
+   that needs a primary creation action). */
+.fab {
+  position: fixed;
+  bottom: 80px;
+  left: 16px;
+  z-index: 900;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md-4);
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.fab:hover  { background: #165233; box-shadow: var(--shadow-lg-4); }
+.fab:active { transform: scale(0.96); }
+.fab i      { font-size: 24px; line-height: 1; }

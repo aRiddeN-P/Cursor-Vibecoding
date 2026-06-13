@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>دارایی‌ها — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/assets.css?v=20260612p9b" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.location.href='/dashboard.html'"
+              aria-label="بازگشت" title="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">دارایی‌ها</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-header-add" aria-label="افزودن دارایی" title="افزودن دارایی">
+        <i class="ti ti-plus"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content" id="main-content">
+    <!-- subscription gate or assets UI injected by assets.js -->
+  </main>
+
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+
+  <div class="dk-sheet" id="asset-form-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="asset-form-title">افزودن دارایی</h3>
+      <button type="button" class="close-btn" data-close-sheet="asset-form-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="asset-form-body"></div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="asset-form-save">ذخیره</button>
+    </div>
+  </div>
+
+  <div class="dk-sheet" id="asset-detail-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="asset-detail-title">جزئیات دارایی</h3>
+      <button type="button" class="close-btn" data-close-sheet="asset-detail-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="asset-detail-body"></div>
+    <div class="dk-sheet-foot" style="display:flex;gap:8px;">
+      <button type="button" class="dk-sheet-btn secondary" id="asset-detail-edit" style="flex:1;">ویرایش</button>
+      <button type="button" class="dk-sheet-btn" id="asset-detail-delete" style="flex:1;color:var(--color-danger);">حذف</button>
+    </div>
+  </div>
+
+  <div class="dk-sheet" id="composition-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>ترکیب دارایی‌ها</h3>
+      <button type="button" class="close-btn" data-close-sheet="composition-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div id="composition-donut" style="display:flex;justify-content:center;"></div>
+      <div class="asset-composition-legend" id="composition-legend"></div>
+    </div>
+  </div>
+
+  <div class="dk-sheet" id="history-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>تاریخچه ارزش دارایی‌ها</h3>
+      <button type="button" class="close-btn" data-close-sheet="history-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="asset-history-list" id="history-list"></div>
+    </div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/subscription-gate.js"></script>
+  <script src="/js/assets.js?v=20260612p9b"></script>
+  <script src="/js/bottom-nav.js"></script>
+</body>
+</html>

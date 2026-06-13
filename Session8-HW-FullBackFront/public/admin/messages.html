@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>پیام‌رسانی — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-content.css" />
+  <link rel="stylesheet" href="/admin/css/admin-messaging.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar"><h1 class="admin-page-title">پیام‌رسانی</h1></div>
+      <div class="admin-content">
+
+        <div class="admin-tabs" id="msg-tabs">
+          <button type="button" class="admin-tab-btn active" data-msg-tab="send">ارسال پیام</button>
+          <button type="button" class="admin-tab-btn" data-msg-tab="history">تاریخچه</button>
+        </div>
+
+        <!-- TAB: Send -->
+        <div class="admin-tab-panel active" data-msg-panel="send">
+          <div class="admin-tabs admin-tabs-sub" id="send-tabs">
+            <button type="button" class="admin-tab-btn active" data-send-tab="group-msg">پیام گروهی</button>
+            <button type="button" class="admin-tab-btn" data-send-tab="group-expert">پیشنهاد گروهی</button>
+            <button type="button" class="admin-tab-btn" data-send-tab="direct">پیام مستقیم</button>
+          </div>
+
+          <!-- Panel: Group message -->
+          <div class="messaging-send-panel active" data-send-panel="group-msg">
+            <div class="messaging-grid">
+              <div class="admin-card">
+                <h2 class="admin-section-title">پیام گروهی (همه کاربران)</h2>
+                <div class="msg-recipient-count" id="bc-recipient-count">
+                  <i class="ti ti-users"></i> تعداد دریافت‌کنندگان: —
+                </div>
+                <form id="bc-form">
+                  <div class="admin-form-row">
+                    <label for="bc-title">عنوان پیام</label>
+                    <input type="text" class="admin-input" id="bc-title" maxlength="80" required />
+                    <div class="admin-char-counter" id="bc-title-counter">۰/۸۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="bc-body">متن پیام</label>
+                    <textarea class="admin-input" id="bc-body" rows="4" maxlength="1000" required></textarea>
+                    <div class="admin-char-counter" id="bc-body-counter">۰/۱۰۰۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="bc-expires">تاریخ انقضا</label>
+                    <input type="text" class="admin-input admin-jalali-datetime" id="bc-expires" required autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+                    <div class="msg-expires-quick" id="bc-expires-quick">
+                      <button type="button" class="msg-expires-quick-btn" data-expires="86400000">+۱ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="259200000">+۳ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="604800000">+۱ هفته</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="2592000000">+۱ ماه</button>
+                    </div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label class="admin-form-check">
+                      <input type="checkbox" id="bc-push" checked /> ارسال پوش نوتیفیکیشن
+                    </label>
+                  </div>
+                  <div class="msg-preview-card">
+                    <div class="msg-preview-label">پیش‌نمایش در اپ</div>
+                    <div class="msg-preview-title" id="bc-preview-title">عنوان پیام</div>
+                    <div class="msg-preview-body" id="bc-preview-body">متن پیام اینجا نمایش داده می‌شود...</div>
+                    <div class="msg-preview-meta" id="bc-preview-meta"></div>
+                  </div>
+                  <div style="margin-top:16px">
+                    <button type="submit" class="admin-btn warning">ارسال برای همه کاربران</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="admin-card">
+                <h2 class="admin-section-title">پیام گروهی با فایل اکسل</h2>
+                <p class="admin-form-hint" style="margin-bottom:12px">
+                  فایل CSV یا Excel با ستون <strong>موبایل</strong> یا <strong>شماره موبایل</strong> (یا ستون اول)
+                </p>
+                <div class="admin-form-row">
+                  <label for="bulk-msg-file">فایل کاربران</label>
+                  <input type="file" class="admin-input" id="bulk-msg-file" accept=".csv,.xlsx,.xls" />
+                </div>
+                <div id="bulk-msg-parse-result" class="msg-import-result hidden"></div>
+                <form id="bulk-msg-form">
+                  <div class="admin-form-row">
+                    <label for="bulk-msg-title">عنوان پیام</label>
+                    <input type="text" class="admin-input" id="bulk-msg-title" maxlength="80" required />
+                    <div class="admin-char-counter" id="bulk-msg-title-counter">۰/۸۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="bulk-msg-body">متن پیام</label>
+                    <textarea class="admin-input" id="bulk-msg-body" rows="4" maxlength="1000" required></textarea>
+                    <div class="admin-char-counter" id="bulk-msg-body-counter">۰/۱۰۰۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="bulk-msg-expires">تاریخ انقضا</label>
+                    <input type="text" class="admin-input admin-jalali-datetime" id="bulk-msg-expires" required autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+                    <div class="msg-expires-quick" id="bulk-msg-expires-quick">
+                      <button type="button" class="msg-expires-quick-btn" data-expires="86400000">+۱ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="259200000">+۳ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="604800000">+۱ هفته</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="2592000000">+۱ ماه</button>
+                    </div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label class="admin-form-check">
+                      <input type="checkbox" id="bulk-msg-push" checked /> ارسال پوش نوتیفیکیشن
+                    </label>
+                  </div>
+                  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" class="admin-btn secondary" id="btn-bulk-msg-parse">بررسی فایل</button>
+                    <button type="submit" class="admin-btn primary" id="btn-bulk-msg-send" disabled>ارسال به لیست</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Group expert recommendation -->
+          <div class="messaging-send-panel" data-send-panel="group-expert">
+            <div class="messaging-grid">
+              <div class="admin-card messaging-card-full">
+                <h2 class="admin-section-title">ارسال پیشنهاد تخصصی</h2>
+                <div class="admin-filter-pills" id="expert-target-pills">
+                  <button type="button" class="admin-filter-pill active" data-expert-target="all_subscribed">گروهی (اشتراک‌داران)</button>
+                  <button type="button" class="admin-filter-pill" data-expert-target="user">مستقیم (یک کاربر)</button>
+                </div>
+                <div class="msg-recipient-count" id="expert-sub-count">
+                  <i class="ti ti-crown"></i> — کاربر دارای اشتراک فعال
+                </div>
+                <form id="expert-form">
+                  <div class="admin-form-row">
+                    <label for="expert-rec-select">پیشنهاد</label>
+                    <select class="admin-input admin-select" id="expert-rec-select" required></select>
+                  </div>
+                  <div id="expert-preview"></div>
+                  <div class="admin-form-row hidden" id="expert-user-wrap">
+                    <label for="expert-mobile">موبایل کاربر</label>
+                    <div class="admin-quick-search-row">
+                      <input type="text" class="admin-input" id="expert-mobile" placeholder="09xxxxxxxxx" dir="ltr" />
+                      <button type="button" class="admin-btn secondary" id="btn-expert-search">جستجو</button>
+                    </div>
+                    <div id="expert-user-result"></div>
+                  </div>
+                  <div style="margin-top:16px">
+                    <button type="submit" class="admin-btn primary">ارسال پیشنهاد</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="admin-card messaging-card-full">
+                <h2 class="admin-section-title">پیشنهاد گروهی با فایل اکسل</h2>
+                <p class="admin-form-hint" style="margin-bottom:12px">
+                  فایل CSV یا Excel با ستون موبایل — فقط کاربران دارای اشتراک فعال پیشنهاد دریافت می‌کنند
+                </p>
+                <div class="admin-form-row">
+                  <label for="bulk-expert-file">فایل کاربران</label>
+                  <input type="file" class="admin-input" id="bulk-expert-file" accept=".csv,.xlsx,.xls" />
+                </div>
+                <div id="bulk-expert-parse-result" class="msg-import-result hidden"></div>
+                <form id="bulk-expert-form">
+                  <div class="admin-form-row">
+                    <label for="bulk-expert-rec-select">پیشنهاد</label>
+                    <select class="admin-input admin-select" id="bulk-expert-rec-select" required></select>
+                  </div>
+                  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" class="admin-btn secondary" id="btn-bulk-expert-parse">بررسی فایل</button>
+                    <button type="submit" class="admin-btn primary" id="btn-bulk-expert-send" disabled>ارسال به لیست</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Direct message -->
+          <div class="messaging-send-panel" data-send-panel="direct">
+            <div class="messaging-grid messaging-grid-single">
+              <div class="admin-card">
+                <h2 class="admin-section-title">پیام مستقیم (یک کاربر)</h2>
+                <div class="admin-form-row">
+                  <label for="dir-mobile">موبایل کاربر</label>
+                  <div class="admin-quick-search-row">
+                    <input type="text" class="admin-input" id="dir-mobile" placeholder="09xxxxxxxxx" dir="ltr" />
+                    <button type="button" class="admin-btn secondary" id="btn-dir-search">جستجو</button>
+                  </div>
+                  <div id="dir-user-result"></div>
+                </div>
+                <form id="dir-form">
+                  <div class="admin-form-row">
+                    <label for="dir-title">عنوان پیام</label>
+                    <input type="text" class="admin-input" id="dir-title" maxlength="80" required />
+                    <div class="admin-char-counter" id="dir-title-counter">۰/۸۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="dir-body">متن پیام</label>
+                    <textarea class="admin-input" id="dir-body" rows="4" maxlength="1000" required></textarea>
+                    <div class="admin-char-counter" id="dir-body-counter">۰/۱۰۰۰</div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label for="dir-expires">تاریخ انقضا</label>
+                    <input type="text" class="admin-input admin-jalali-datetime" id="dir-expires" required autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+                    <div class="msg-expires-quick" id="dir-expires-quick">
+                      <button type="button" class="msg-expires-quick-btn" data-expires="86400000">+۱ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="259200000">+۳ روز</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="604800000">+۱ هفته</button>
+                      <button type="button" class="msg-expires-quick-btn" data-expires="2592000000">+۱ ماه</button>
+                    </div>
+                  </div>
+                  <div class="admin-form-row">
+                    <label class="admin-form-check">
+                      <input type="checkbox" id="dir-push" checked /> ارسال پوش نوتیفیکیشن
+                    </label>
+                  </div>
+                  <div class="msg-preview-card">
+                    <div class="msg-preview-label">پیش‌نمایش در اپ</div>
+                    <div class="msg-preview-title" id="dir-preview-title">عنوان پیام</div>
+                    <div class="msg-preview-body" id="dir-preview-body">متن پیام اینجا نمایش داده می‌شود...</div>
+                    <div class="msg-preview-meta" id="dir-preview-meta"></div>
+                  </div>
+                  <div style="margin-top:16px">
+                    <button type="submit" class="admin-btn primary">ارسال پیام</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: History -->
+        <div class="admin-tab-panel" data-msg-panel="history">
+          <div class="messaging-history-stats">
+            <span class="admin-stats-pill" id="hist-stat-today">۰ پیام امروز</span>
+            <span class="admin-stats-pill" id="hist-stat-month">۰ این ماه</span>
+            <span class="admin-stats-pill" id="hist-stat-rate">نرخ خواندن: ۰٪</span>
+          </div>
+          <div class="admin-content-topbar">
+            <div class="admin-filter-pills">
+              <span style="font-size:12px;color:var(--admin-text-3);align-self:center">نوع:</span>
+              <button type="button" class="admin-filter-pill active" data-hist-target="">همه</button>
+              <button type="button" class="admin-filter-pill" data-hist-target="broadcast">گروهی</button>
+              <button type="button" class="admin-filter-pill" data-hist-target="user">مستقیم</button>
+            </div>
+            <div class="admin-filter-pills">
+              <span style="font-size:12px;color:var(--admin-text-3);align-self:center">بازه:</span>
+              <button type="button" class="admin-filter-pill active" data-hist-period="all">همه</button>
+              <button type="button" class="admin-filter-pill" data-hist-period="today">امروز</button>
+              <button type="button" class="admin-filter-pill" data-hist-period="week">این هفته</button>
+              <button type="button" class="admin-filter-pill" data-hist-period="month">این ماه</button>
+            </div>
+          </div>
+          <div class="admin-card admin-content-table-wrap">
+            <table class="admin-content-table">
+              <thead>
+                <tr>
+                  <th>عنوان</th>
+                  <th>نوع</th>
+                  <th>گیرنده</th>
+                  <th>ارسال</th>
+                  <th>خوانده</th>
+                  <th>نرخ</th>
+                  <th>انقضا</th>
+                  <th>ارسال‌کننده</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+          <div class="admin-pagination" id="history-pagination" style="margin-top:16px;display:flex;gap:12px;align-items:center"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="admin-modal-overlay hidden" id="progress-modal" hidden>
+    <div class="admin-modal" style="max-width:400px;text-align:center">
+      <h2 class="admin-modal-title" id="progress-label">در حال ارسال...</h2>
+      <div class="messaging-progress-bar"><div class="messaging-progress-fill" id="progress-fill"></div></div>
+      <p id="progress-detail" style="font-size:13px;color:var(--admin-text-2)"></p>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay hidden" id="success-modal" hidden>
+    <div class="admin-modal" style="max-width:400px;text-align:center">
+      <h2 class="admin-modal-title" id="success-title">✓ موفق</h2>
+      <div id="success-body" style="font-size:14px;color:var(--admin-text-2);line-height:1.8;margin:16px 0"></div>
+      <div class="admin-modal-actions" style="justify-content:center">
+        <button type="button" class="admin-btn secondary" id="success-close">بستن</button>
+        <button type="button" class="admin-btn primary" id="success-history">مشاهده تاریخچه</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script>initAdminLayout('messages');</script>
+  <script src="/admin/js/admin-date-picker.js"></script>
+  <script src="/admin/js/admin-messages.js"></script>
+</body>
+</html>

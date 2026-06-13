@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>دخلیار — مدیریت احراز هویت (Dev)</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/admin-review.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body>
+  <main class="admin-page">
+    <header class="admin-header">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <h1>مدیریت احراز هویت <small style="color:var(--text-muted);font-weight:normal;font-size:12px;margin-right:6px">— Dev mode</small></h1>
+      <nav class="admin-nav">
+        <a href="/admin">صفحه ادمین</a>
+        <a href="/admin-stories.html">استوری‌ها</a>
+        <a href="/admin-verifications.html" class="active">احراز</a>
+        <a href="/admin-subscriptions.html">اشتراک‌ها</a>
+      </nav>
+    </header>
+
+    <div class="dev-banner">
+      <strong>حالت Dev:</strong> این پنل فقط در محیط توسعه فعال است. برای استفاده باید با
+      <code>/api/admin/stories/dev-login</code> به‌عنوان ادمین وارد شده باشید (از طریق دکمه‌ی پایین یا صفحه‌ی <a href="/admin-stories.html" style="color:var(--warning-text);text-decoration:underline">مدیریت استوری‌ها</a>).
+    </div>
+
+    <div class="admin-card" id="adminStatusCard">
+      <div class="section-header">
+        <h2>وضعیت ادمین</h2>
+        <button class="refresh-btn" id="refreshStatusBtn">بازخوانی</button>
+      </div>
+      <div id="adminStatusBox" class="muted">در حال بارگذاری…</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="devLoginBtn"  style="width:auto">ورود Dev Admin</button>
+        <button class="btn btn-ghost"   id="devLogoutBtn" style="width:auto">خروج Dev Admin</button>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="section-header">
+        <h2>درخواست‌های احراز هویت</h2>
+        <button class="refresh-btn" id="refreshListBtn">بازخوانی</button>
+      </div>
+
+      <div class="filter-bar">
+        <button data-filter="all"      class="active">همه</button>
+        <button data-filter="pending">در انتظار</button>
+        <button data-filter="approved">تایید‌شده</button>
+        <button data-filter="rejected">رد‌شده</button>
+      </div>
+
+      <div id="reqList" class="req-list">
+        <div class="empty-state">در حال بارگذاری…</div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:300;text-align:center;max-width:90vw"></div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/admin-verifications.js"></script>
+</body>
+</html>

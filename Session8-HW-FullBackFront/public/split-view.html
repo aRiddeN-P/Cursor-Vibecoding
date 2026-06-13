@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>مشاهده بدهی — دنگ و دونگ</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/split.css?v=20260612p12d" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="split-view-page">
+
+  <div class="split-view-header">
+    <h1 id="pv-group-name">دنگ و دونگ</h1>
+    <p id="pv-group-desc"></p>
+  </div>
+
+  <div id="pv-loading" class="split-loading">در حال بارگذاری…</div>
+
+  <div id="pv-mobile-step" class="mobile-step" style="display:none;">
+    <p class="mobile-step-label">شماره موبایل خود را وارد کنید</p>
+    <div class="fld">
+      <input type="tel" id="pv-mobile" placeholder="09121234567" />
+    </div>
+    <button type="button" class="split-empty-btn" id="pv-submit-mobile" style="width:100%;">مشاهده بدهی</button>
+  </div>
+
+  <div id="pv-content" style="display:none;">
+    <div class="public-balance-card" id="pv-balance-card">
+      <div class="public-balance-amount" id="pv-balance-amount">۰</div>
+      <div class="public-balance-label" id="pv-balance-label">—</div>
+    </div>
+
+    <div class="split-view-section" id="pv-settle-section" style="display:none;">
+      <h3>برای تسویه حساب</h3>
+      <div id="pv-settle-list"></div>
+    </div>
+
+    <div class="split-view-section">
+      <h3>هزینه‌های شما</h3>
+      <div id="pv-expenses"></div>
+    </div>
+
+    <div class="split-cta-card">
+      <p>برای مدیریت بهتر مالی خود دخلیار را امتحان کنید</p>
+      <a class="split-cta-btn" href="/">ثبت‌نام رایگان</a>
+    </div>
+  </div>
+
+  <div id="pv-error" class="split-loading" style="display:none;"></div>
+
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/split-view.js?v=20260612p12"></script>
+</body>
+</html>

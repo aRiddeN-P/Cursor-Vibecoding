@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>دخلیار — ورود</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main class="page">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div class="brand-name">دخلیار</div>
+    </div>
+
+    <section id="loginCard" class="card" aria-labelledby="loginTitle">
+      <h1 id="loginTitle">ورود به حساب کاربری</h1>
+      <p class="subtitle">برای ادامه، شماره موبایل و رمز عبور خود را وارد کنید</p>
+
+      <div id="lockBanner" class="banner" role="alert"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="mobile">شماره موبایل</label>
+          <div class="input-wrap">
+            <input
+              id="mobile"
+              name="mobile"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="username"
+              class="input ltr"
+              placeholder="09xxxxxxxxx"
+              maxlength="11"
+              required
+            />
+          </div>
+          <div id="mobileError" class="error-text"></div>
+        </div>
+
+        <div class="field">
+          <label for="password">رمز عبور</label>
+          <div class="input-wrap">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              class="input"
+              placeholder="رمز عبور"
+              required
+            />
+            <button id="togglePass" type="button" class="toggle-pass" aria-label="نمایش/مخفی کردن رمز">نمایش</button>
+          </div>
+          <div id="passwordError" class="error-text"></div>
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn btn-primary">ورود</button>
+
+        <div class="mt-16 center-text">
+          <a id="forgotLink" href="/forgot-password.html" class="btn-link" style="display:inline-block;text-decoration:none;">فراموشی رمز عبور</a>
+        </div>
+      </form>
+
+      <p class="foot">
+        حساب کاربری ندارید؟ <a href="/signup.html">ثبت‌نام کنید</a>
+      </p>
+    </section>
+  </main>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

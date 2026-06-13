@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>گزارشات — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css" />
+  <link rel="stylesheet" href="/css/reports.css?v=20260612p7" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.location.href='/profile.html'"
+              aria-label="پروفایل" title="پروفایل">
+        <i class="ti ti-user-circle"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">گزارشات</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" onclick="window.location.href='/goals.html'"
+              aria-label="اهداف پس‌انداز" title="اهداف پس‌انداز">
+        <i class="ti ti-target"></i>
+      </button>
+      <button type="button" class="icon-btn" id="btn-open-budget" aria-label="تنظیم بودجه" title="تنظیم بودجه">
+        <i class="ti ti-wallet"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="rp-tabs" id="rp-tabs">
+    <button type="button" class="rp-tab active" data-range="1">این ماه</button>
+    <button type="button" class="rp-tab" data-range="3">۳ ماه</button>
+    <button type="button" class="rp-tab" data-range="6">۶ ماه</button>
+  </div>
+
+  <main class="page-content" id="main-content">
+    <div id="rp-loading" class="rp-loading">در حال بارگذاری گزارش…</div>
+    <div id="rp-content" style="display:none;">
+
+      <!-- Section 1: Score -->
+      <section class="rp-section" id="sec-score">
+        <h3>امتیاز مالی</h3>
+        <div class="rp-score-wrap">
+          <svg id="score-arc" width="140" height="140" aria-hidden="true"></svg>
+          <div class="rp-score-label" id="score-label">—</div>
+          <div class="rp-breakdown" id="score-breakdown"></div>
+          <ul class="rp-tips" id="score-tips"></ul>
+        </div>
+      </section>
+
+      <!-- Section 2: Summary -->
+      <section class="rp-section" id="sec-summary">
+        <h3 id="summary-title">خلاصه ماه</h3>
+        <div class="rp-metrics">
+          <div class="rp-metric income"><span class="lbl">درآمد</span><span class="val" id="sum-income">۰</span></div>
+          <div class="rp-metric expense"><span class="lbl">هزینه</span><span class="val" id="sum-expense">۰</span></div>
+          <div class="rp-metric balance"><span class="lbl">مانده</span><span class="val" id="sum-balance">۰</span></div>
+        </div>
+        <div class="rp-quick-links">
+          <button type="button" class="rp-budget-btn" id="btn-budget-inline">تنظیم بودجه</button>
+          <a href="/goals.html" class="rp-goals-btn">🎯 اهداف پس‌انداز</a>
+        </div>
+      </section>
+
+      <!-- Section 3: Expense breakdown -->
+      <section class="rp-section" id="sec-donut">
+        <h3>هزینه به تفکیک دسته</h3>
+        <div class="rp-donut-wrap"><div id="donut-chart"></div></div>
+        <div class="rp-legend" id="expense-legend"></div>
+      </section>
+
+      <!-- Section 4: Comparison -->
+      <section class="rp-section" id="sec-comparison">
+        <h3>مقایسه ماه‌به‌ماه</h3>
+        <svg class="rp-chart-svg" id="comparison-chart" height="180"></svg>
+        <div class="rp-insight" id="comparison-insight"></div>
+      </section>
+
+      <!-- Section 5: Weekly pattern -->
+      <section class="rp-section" id="sec-weekly">
+        <h3>الگوی روزهای هفته</h3>
+        <div class="rp-week-chart" id="weekly-chart"></div>
+        <div class="rp-insight" id="weekly-insight"></div>
+      </section>
+
+      <!-- Section 6: Cash flow forecast -->
+      <section class="rp-section" id="sec-forecast">
+        <h3>پیش‌بینی جریان نقدی</h3>
+        <div class="rp-forecast-card">
+          <div class="rp-forecast-val" id="forecast-balance">۰</div>
+          <div style="font-size:12px;color:var(--color-text-2);">موجودی پیش‌بینی‌شده پایان ماه</div>
+          <div class="rp-progress"><i id="forecast-progress" style="width:0%"></i></div>
+          <span class="rp-confidence" id="forecast-confidence">—</span>
+          <p style="font-size:12px;margin:10px 0 0;line-height:1.7;" id="forecast-insight"></p>
+        </div>
+      </section>
+
+      <!-- Section 7: Subscriptions -->
+      <section class="rp-section" id="sec-subs">
+        <h3>ردیابی اشتراک‌ها</h3>
+        <div id="subs-alert"></div>
+        <div class="rp-sub-list" id="subs-list"></div>
+        <div style="margin-top:10px;font-size:13px;font-weight:700;text-align:center;" id="subs-total"></div>
+      </section>
+
+      <!-- Section 8: Export -->
+      <section class="rp-section" id="sec-export">
+        <h3>صادرکردن گزارش</h3>
+        <div class="rp-export-row">
+          <button type="button" class="rp-btn-secondary" id="btn-export-csv">
+            <i class="ti ti-file-spreadsheet"></i> خروجی CSV
+          </button>
+          <button type="button" class="rp-btn-primary" id="btn-export-pdf">
+            <i class="ti ti-file-type-pdf"></i> خروجی PDF
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Budget sheet -->
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+  <div class="dk-sheet" id="budget-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>مدیریت بودجه</h3>
+      <button type="button" class="close-btn" data-close-sheet="budget-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="budget-body">
+      <div class="bg-zbb" id="bg-zbb">در حال بارگذاری…</div>
+      <div class="bg-actions">
+        <button type="button" id="btn-bg-add">افزودن بودجه</button>
+        <button type="button" id="btn-bg-copy">کپی از ماه قبل</button>
+      </div>
+      <div id="bg-list"></div>
+    </div>
+  </div>
+
+  <!-- Add budget mini sheet -->
+  <div class="dk-sheet" id="bg-add-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>افزودن بودجه</h3>
+      <button type="button" class="close-btn" data-close-sheet="bg-add-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label>دسته‌بندی</label>
+        <select id="bg-add-cat" style="width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--color-border);font-family:Vazirmatn,sans-serif;"></select>
+      </div>
+      <div class="fld">
+        <label>مبلغ بودجه (تومان)</label>
+        <input type="text" inputmode="numeric" id="bg-add-amount" placeholder="مثلاً ۲,۰۰۰,۰۰۰" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="btn-bg-save">ذخیره بودجه</button>
+    </div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/jalali.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/budget.js?v=20260612p6"></script>
+  <script src="/js/reports.js?v=20260612p6"></script>
+  <script src="/js/bottom-nav.js"></script>
+  <script>DakhlyarNav.init('reports');</script>
+</body>
+</html>

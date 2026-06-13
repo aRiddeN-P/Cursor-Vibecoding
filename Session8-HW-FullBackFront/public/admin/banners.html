@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>بنرها — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-content.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar"><h1 class="admin-page-title">بنرها</h1></div>
+      <div class="admin-content">
+        <div class="admin-content-topbar">
+          <button type="button" class="admin-btn primary" id="btn-new-banner">آپلود بنر جدید</button>
+          <div class="admin-stats-pills">
+            <span class="admin-stats-pill" id="stat-active">۰ بنر فعال</span>
+            <span class="admin-stats-pill" id="stat-impressions">۰ نمایش</span>
+            <span class="admin-stats-pill" id="stat-clicks">۰ کلیک</span>
+          </div>
+        </div>
+        <div class="admin-card admin-content-table-wrap">
+          <table class="admin-content-table">
+            <thead>
+              <tr>
+                <th>تصویر</th>
+                <th>عنوان</th>
+                <th>وضعیت</th>
+                <th>بازه نمایش</th>
+                <th>ترتیب</th>
+                <th>نمایش</th>
+                <th>کلیک</th>
+                <th>CTR</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="banners-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="admin-modal-overlay hidden" id="banner-modal" hidden>
+    <div class="admin-modal" style="max-width:520px">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title" id="banner-modal-title">آپلود بنر جدید</h2>
+        <button type="button" class="admin-modal-close" id="banner-modal-close">&times;</button>
+      </div>
+      <form id="banner-form">
+        <div class="admin-form-row">
+          <label for="banner-file">تصویر</label>
+          <input type="file" class="admin-input" id="banner-file" accept="image/jpeg,image/png,image/webp" />
+          <img id="banner-current-img" class="upload-preview hidden" alt="تصویر فعلی" style="max-height:80px" />
+          <img id="banner-preview" class="upload-preview hidden" alt="پیش‌نمایش" style="max-height:80px" />
+        </div>
+        <div class="admin-form-row">
+          <label for="banner-title">عنوان داخلی</label>
+          <input type="text" class="admin-input" id="banner-title" maxlength="80" required />
+        </div>
+        <div class="admin-form-row">
+          <label>نوع لینک</label>
+          <div class="admin-radio-group">
+            <label><input type="radio" name="link_type" value="internal" checked /> داخلی</label>
+            <label><input type="radio" name="link_type" value="external" /> خارجی</label>
+          </div>
+        </div>
+        <div class="admin-form-row" id="internal-link-wrap">
+          <label for="banner-internal-page">صفحه مقصد</label>
+          <select class="admin-input admin-select" id="banner-internal-page"></select>
+        </div>
+        <div class="admin-form-row hidden" id="external-link-wrap">
+          <label for="banner-external-url">لینک مقصد</label>
+          <input type="url" class="admin-input" id="banner-external-url" dir="ltr" placeholder="https://..." />
+        </div>
+        <div class="admin-form-row">
+          <label for="banner-starts">تاریخ شروع</label>
+          <input type="text" class="admin-input admin-jalali-datetime" id="banner-starts" required autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+        </div>
+        <div class="admin-form-row">
+          <label for="banner-ends">تاریخ پایان</label>
+          <input type="text" class="admin-input admin-jalali-datetime" id="banner-ends" required autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+        </div>
+        <div class="admin-form-row">
+          <label for="banner-order">ترتیب نمایش (۰ = بالاترین اولویت)</label>
+          <input type="number" class="admin-input" id="banner-order" value="0" min="0" />
+        </div>
+        <div class="admin-modal-actions">
+          <button type="submit" class="admin-btn primary">ذخیره</button>
+          <button type="button" class="admin-btn secondary" id="banner-modal-cancel">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script>initAdminLayout('banners');</script>
+  <script src="/admin/js/admin-date-picker.js"></script>
+  <script src="/admin/js/admin-banners.js"></script>
+</body>
+</html>

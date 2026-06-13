@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>تراکنش‌ها — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.location.href='/profile.html'"
+              aria-label="پروفایل" title="پروفایل">
+        <i class="ti ti-user-circle"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+
+    <div class="header-title">تراکنش‌ها</div>
+
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-filter" aria-label="فیلتر" title="فیلتر">
+        <i class="ti ti-filter"></i>
+      </button>
+      <button type="button" class="icon-btn" id="btn-import" aria-label="وارد کردن CSV" title="وارد کردن CSV">
+        <i class="ti ti-file-upload"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sticky summary bar -->
+  <div class="tx-summary" id="tx-summary">
+    <div class="cell">
+      <span class="lbl">درآمد</span>
+      <span class="val income"  id="sum-income">۰</span>
+    </div>
+    <div class="cell">
+      <span class="lbl">هزینه</span>
+      <span class="val expense" id="sum-expense">۰</span>
+    </div>
+    <div class="cell">
+      <span class="lbl">مانده</span>
+      <span class="val balance" id="sum-balance">۰</span>
+    </div>
+    <div class="month-pill" id="sum-month">—</div>
+  </div>
+
+  <!-- List -->
+  <main class="page-content" id="main-content">
+    <div id="tx-list" aria-live="polite"></div>
+    <div id="tx-loadmore" style="text-align:center; padding:12px;"></div>
+    <div id="tx-empty" class="card" style="display:none;">
+      <div class="empty-state">
+        <i class="ti ti-receipt" aria-hidden="true"></i>
+        <h3>هنوز تراکنشی ثبت نشده</h3>
+        <p>برای ثبت اولین تراکنش روی دکمه‌ی <strong>+</strong> در پایین صفحه بزنید.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- FAB -->
+  <button type="button" class="fab" id="btn-add-transaction"
+          aria-label="افزودن تراکنش" title="افزودن تراکنش">
+    <i class="ti ti-plus" aria-hidden="true"></i>
+  </button>
+
+  <!-- ── Sheet overlay + skeleton ─────────────────────────────────────── -->
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+
+  <!-- Add/Edit sheet -->
+  <div class="dk-sheet" id="edit-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="edit-sheet-title">ثبت تراکنش جدید</h3>
+      <button type="button" class="close-btn" data-close-sheet="edit-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <div class="dk-type-toggle" role="tablist" aria-label="نوع تراکنش">
+          <button type="button" class="pill expense active" data-type="expense">هزینه</button>
+          <button type="button" class="pill income"           data-type="income">درآمد</button>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label>مبلغ</label>
+        <div class="dk-amount-wrap">
+          <input type="text" inputmode="numeric" id="fld-amount" placeholder="۰" autocomplete="off" />
+          <div class="formatted" id="fld-amount-formatted">۰ تومان</div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label>دسته‌بندی</label>
+        <div class="dk-cat-grid" id="fld-categories"></div>
+      </div>
+
+      <div class="fld">
+        <label>عنوان <span class="char-count" id="title-count">۰/۶۰</span></label>
+        <input type="text" id="fld-title" maxlength="60" />
+      </div>
+
+      <div class="fld">
+        <label>تاریخ (شمسی)</label>
+        <input type="text" id="fld-date" placeholder="1404-03-15" inputmode="numeric" />
+        <div class="helper" id="fld-date-pretty"></div>
+      </div>
+
+      <div class="fld">
+        <label>ساعت (اختیاری)</label>
+        <input type="time" id="fld-time" />
+      </div>
+
+      <div class="fld">
+        <label>یادداشت <span class="char-count" id="note-count">۰/۵۰۰</span></label>
+        <textarea id="fld-note" maxlength="500" rows="3"></textarea>
+      </div>
+
+      <div class="fld">
+        <label>تگ‌ها (حداکثر ۵ تگ)</label>
+        <div class="dk-tag-input" id="fld-tags">
+          <input type="text" id="fld-tag-input" placeholder="مثلاً: کاری" autocomplete="off" />
+        </div>
+        <div class="dk-tag-suggestions" id="fld-tag-suggestions"></div>
+      </div>
+
+      <div class="fld">
+        <div class="dk-toggle-row">
+          <span class="label">تراکنش تکراری 🔄</span>
+          <div class="dk-switch" id="fld-recurring-switch" role="switch" aria-checked="false" tabindex="0">
+            <div class="knob"></div>
+          </div>
+        </div>
+        <div class="dk-interval-chips" id="fld-interval" style="display:none;">
+          <button type="button" data-interval="weekly">هفتگی</button>
+          <button type="button" data-interval="monthly" class="active">ماهانه</button>
+          <button type="button" data-interval="yearly">سالانه</button>
+        </div>
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="btn-submit-tx">ثبت تراکنش</button>
+    </div>
+  </div>
+
+  <!-- Detail sheet -->
+  <div class="dk-sheet" id="detail-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>جزئیات تراکنش</h3>
+      <button type="button" class="close-btn" data-close-sheet="detail-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="detail-body"></div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn secondary" id="btn-edit-tx">ویرایش</button>
+      <button type="button" class="dk-sheet-btn primary danger" id="btn-delete-tx">حذف</button>
+    </div>
+  </div>
+
+  <!-- Filter sheet -->
+  <div class="dk-sheet" id="filter-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>فیلتر تراکنش‌ها</h3>
+      <button type="button" class="close-btn" data-close-sheet="filter-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label>نوع</label>
+        <div class="dk-pill-row" id="flt-type">
+          <button type="button" class="dk-pill active" data-type="">همه</button>
+          <button type="button" class="dk-pill" data-type="income">درآمد</button>
+          <button type="button" class="dk-pill" data-type="expense">هزینه</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>بازه زمانی</label>
+        <div class="dk-pill-row" id="flt-range">
+          <button type="button" class="dk-pill active" data-range="this-month">این ماه</button>
+          <button type="button" class="dk-pill" data-range="last-month">ماه قبل</button>
+          <button type="button" class="dk-pill" data-range="3-months">۳ ماه اخیر</button>
+          <button type="button" class="dk-pill" data-range="all">همه</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>دسته‌بندی</label>
+        <div class="dk-pill-row" id="flt-cat">
+          <button type="button" class="dk-pill active" data-cat="">همه</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>جستجو در عنوان/یادداشت</label>
+        <input type="text" id="flt-search" placeholder="کلمه کلیدی…" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn secondary" id="btn-filter-reset">پاک‌کردن</button>
+      <button type="button" class="dk-sheet-btn primary" id="btn-filter-apply">اعمال</button>
+    </div>
+  </div>
+
+  <!-- Import sheet -->
+  <div class="dk-sheet" id="import-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3>وارد کردن از CSV</h3>
+      <button type="button" class="close-btn" data-close-sheet="import-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="import-body">
+      <p style="font-size:13px; color:var(--color-text-2); line-height:1.8; margin:0 0 14px;">
+        فایل <strong>CSV</strong> یا <strong>Excel</strong> (xlsx/xls) با سرستون‌های فارسی شامل: نوع، عنوان، مبلغ (تومان)،
+        دسته‌بندی، تاریخ، یادداشت، تگ‌ها، تکراری. تاریخ‌ها می‌توانند شمسی (مثلاً <code>1404-03-15</code>) باشند.
+      </p>
+      <button type="button" class="dk-sheet-btn secondary" id="btn-download-sample" style="margin-bottom:12px;">
+        <i class="ti ti-download"></i> دانلود فایل نمونه
+      </button>
+      <input type="file" id="import-file"
+             accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+             style="margin-bottom:12px; display:block; width:100%; padding:10px;
+                    border:1.5px dashed var(--color-border); border-radius:12px;
+                    background:var(--color-bg); font-family:'Vazirmatn',sans-serif;" />
+      <button type="button" class="dk-sheet-btn primary" id="btn-start-import">شروع وارد کردن</button>
+      <div id="import-result" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/jalali.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/bottom-nav.js"></script>
+  <script src="/js/transactions.js?v=20260612c"></script>
+  <script>DakhlyarNav.init('transactions');</script>
+</body>
+</html>

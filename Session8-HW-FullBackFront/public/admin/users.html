@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>کاربران — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-users.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-page-title">کاربران</h1>
+      </div>
+      <div class="admin-content">
+
+        <div class="admin-quick-search">
+          <label>🔍 جستجوی سریع با شماره موبایل</label>
+          <div class="admin-quick-search-row">
+            <input type="text" class="admin-input" id="quick-mobile" placeholder="09xxxxxxxxx" dir="ltr" />
+            <button type="button" class="admin-btn primary" id="btn-quick-search">جستجو</button>
+          </div>
+        </div>
+
+        <div class="admin-tabs" id="users-tabs">
+          <button type="button" class="admin-tab-btn active" data-tab="users">همه کاربران</button>
+          <button type="button" class="admin-tab-btn" data-tab="verification">
+            درخواست‌های احراز <span class="admin-tab-badge hidden" id="badge-verif">0</span>
+          </button>
+          <button type="button" class="admin-tab-btn" data-tab="subscription">
+            درخواست‌های اشتراک <span class="admin-tab-badge hidden" id="badge-sub">0</span>
+          </button>
+        </div>
+
+        <!-- TAB: Users -->
+        <div class="admin-tab-panel active" id="panel-users">
+          <div class="admin-search-bar">
+            <div class="admin-search-input-wrap">
+              <i class="ti ti-search"></i>
+              <input type="text" class="admin-input" id="filter-search" placeholder="جستجو: موبایل، ایمیل، نام..." />
+            </div>
+            <select class="admin-input admin-select admin-filter-select" id="filter-verif">
+              <option value="">سطح احراز: همه</option>
+              <option value="0">پایه</option>
+              <option value="1">سطح ۱</option>
+              <option value="2">سطح ۲</option>
+              <option value="3">سطح ۳</option>
+            </select>
+            <select class="admin-input admin-select admin-filter-select" id="filter-sub">
+              <option value="">اشتراک: همه</option>
+              <option value="none">بدون اشتراک</option>
+              <option value="silver">نقره‌ای</option>
+              <option value="gold">طلایی</option>
+              <option value="diamond">الماسی</option>
+            </select>
+            <select class="admin-input admin-select admin-filter-select" id="filter-sort">
+              <option value="newest">جدیدترین</option>
+              <option value="oldest">قدیمی‌ترین</option>
+              <option value="last_active">آخرین فعالیت</option>
+            </select>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-table-wrap">
+              <table class="admin-table" id="users-table">
+                <thead>
+                  <tr>
+                    <th>شناسه</th>
+                    <th>نام</th>
+                    <th>موبایل</th>
+                    <th>سطح احراز</th>
+                    <th>اشتراک</th>
+                    <th>تاریخ عضویت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody">
+                  <tr><td colspan="7" class="admin-empty-msg">در حال بارگذاری...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="admin-pagination" id="users-pagination"></div>
+          </div>
+        </div>
+
+        <!-- TAB: Verification -->
+        <div class="admin-tab-panel" id="panel-verification">
+          <div class="admin-bulk-bar" id="bulk-verif-bar">
+            <span id="bulk-verif-count">۰ مورد انتخاب شده</span>
+            <button type="button" id="bulk-verif-approve">تایید انتخاب‌شده‌ها</button>
+            <button type="button" class="btn-reject" id="bulk-verif-reject">رد انتخاب‌شده‌ها</button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th class="admin-checkbox-col"><input type="checkbox" id="verif-select-all" /></th>
+                    <th>کاربر</th>
+                    <th>موبایل</th>
+                    <th>سطح فعلی</th>
+                    <th>سطح درخواستی</th>
+                    <th>تاریخ</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="verif-tbody"></tbody>
+              </table>
+            </div>
+            <div class="admin-pagination" id="verif-pagination"></div>
+          </div>
+        </div>
+
+        <!-- TAB: Subscription -->
+        <div class="admin-tab-panel" id="panel-subscription">
+          <div class="admin-bulk-bar" id="bulk-sub-bar">
+            <span id="bulk-sub-count">۰ مورد انتخاب شده</span>
+            <button type="button" id="bulk-sub-approve">تایید انتخاب‌شده‌ها</button>
+            <button type="button" class="btn-reject" id="bulk-sub-reject">رد انتخاب‌شده‌ها</button>
+          </div>
+          <div class="admin-card">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th class="admin-checkbox-col"><input type="checkbox" id="sub-select-all" /></th>
+                    <th>کاربر</th>
+                    <th>موبایل</th>
+                    <th>پلن</th>
+                    <th>مبلغ</th>
+                    <th>تخفیف</th>
+                    <th>مبلغ نهایی</th>
+                    <th>تاریخ</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="sub-tbody"></tbody>
+              </table>
+            </div>
+            <div class="admin-pagination" id="sub-pagination"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- User detail modal -->
+  <div class="admin-modal-overlay hidden" id="user-detail-modal" hidden>
+    <div class="admin-modal admin-user-detail-modal">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title">جزئیات کاربر</h2>
+        <button type="button" class="admin-modal-close" data-close="user-detail-modal">&times;</button>
+      </div>
+      <div id="user-detail-body"><p class="admin-empty-msg admin-detail-placeholder">—</p></div>
+    </div>
+  </div>
+
+  <!-- Rejection modal -->
+  <div class="admin-modal-overlay hidden" id="reject-modal" hidden>
+    <div class="admin-modal admin-rejection-modal">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title" id="reject-modal-title">رد درخواست</h2>
+        <button type="button" class="admin-modal-close" data-close="reject-modal">&times;</button>
+      </div>
+      <div class="admin-form-group">
+        <label for="reject-note">دلیل رد (اختیاری)</label>
+        <textarea class="admin-input admin-textarea" id="reject-note" rows="3"></textarea>
+      </div>
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-btn danger" id="btn-confirm-reject">رد درخواست</button>
+        <button type="button" class="admin-btn secondary" data-close="reject-modal">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script src="/admin/js/admin-users.js"></script>
+</body>
+</html>

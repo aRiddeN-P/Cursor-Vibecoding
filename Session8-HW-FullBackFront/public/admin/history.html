@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تاریخچه — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-content.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-page-title">تاریخچه</h1>
+      </div>
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-content-topbar" style="margin-bottom:16px">
+            <div>
+              <h2 class="admin-card-title" style="margin-bottom:4px">فعالیت‌های ادمین</h2>
+              <p class="admin-form-hint" style="margin:0">ورود، خروج و سایر اقدامات ثبت‌شده در پنل</p>
+            </div>
+            <div class="admin-content-topbar-actions">
+              <select class="admin-input admin-select" id="history-admin-filter" style="min-width:160px">
+                <option value="">همه مدیران</option>
+              </select>
+            </div>
+          </div>
+          <div id="activity-log-list"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+          <div class="admin-pagination" id="history-pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script>initAdminLayout('history');</script>
+  <script src="/admin/js/admin-history.js"></script>
+</body>
+</html>

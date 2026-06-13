@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>دخلیار — ثبت‌نام</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <!-- Jalali date picker (Persian Datepicker) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main class="page">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div class="brand-name">دخلیار</div>
+    </div>
+
+    <section class="card" aria-labelledby="signupTitle">
+      <h1 id="signupTitle">ساخت حساب کاربری</h1>
+      <p class="subtitle">برای استفاده از دخلیار، فرم زیر را تکمیل کنید</p>
+
+      <div class="stepper" aria-hidden="true">
+        <div id="dot1" class="step-dot active">۱</div>
+        <div class="step-line"></div>
+        <div id="dot2" class="step-dot">۲</div>
+        <div class="step-line"></div>
+        <div id="dot3" class="step-dot">۳</div>
+      </div>
+
+      <!-- ====================== Step 1: profile ====================== -->
+      <section id="step1" class="wizard-step active">
+        <div class="field">
+          <label for="su_mobile">شماره موبایل</label>
+          <input id="su_mobile" type="tel" inputmode="numeric" maxlength="11"
+                 class="input ltr" placeholder="09xxxxxxxxx" />
+          <div id="su_mobileError" class="error-text"></div>
+        </div>
+
+        <div class="field">
+          <label for="su_email">ایمیل</label>
+          <input id="su_email" type="email" class="input ltr" placeholder="you@example.com" />
+          <div id="su_emailError" class="error-text"></div>
+        </div>
+
+        <div class="field">
+          <label for="su_nid">کد ملی</label>
+          <input id="su_nid" type="text" inputmode="numeric" maxlength="10"
+                 class="input ltr" placeholder="۱۰ رقم" />
+          <div id="su_nidError" class="error-text"></div>
+        </div>
+
+        <div class="field">
+          <label for="su_birth">تاریخ تولد (شمسی)</label>
+          <div class="input-wrap">
+            <input
+              id="su_birth"
+              type="text"
+              class="input ltr"
+              placeholder="برای انتخاب کلیک کنید — مثال: ۱۳۷۰/۰۲/۲۲"
+              readonly
+              autocomplete="off"
+              style="cursor:pointer;"
+            />
+            <span class="input-icon" aria-hidden="true">📅</span>
+          </div>
+          <input id="su_birth_iso" type="hidden" />
+          <span class="hint">تاریخ تولد به صورت شمسی — از امروز تا ۱۲۰ سال قبل</span>
+          <div id="su_birthError" class="error-text"></div>
+        </div>
+
+        <!-- Phase 3-C — optional referral / invite code -->
+        <div class="field">
+          <label for="su_invite">کد دعوت (اختیاری)</label>
+          <input
+            id="su_invite"
+            type="text"
+            class="input ltr"
+            placeholder="DKHL-..."
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="20"
+            style="text-transform:uppercase"
+          />
+          <span class="hint">اگر توسط یک دوست دعوت شده‌اید کد را وارد کنید</span>
+          <div id="su_inviteOk" class="success-text" style="display:none;color:#0E7C3A;font-size:12px;margin-top:6px"></div>
+          <div id="su_inviteError" class="error-text"></div>
+        </div>
+
+        <button id="step1NextBtn" type="button" class="btn btn-primary">ادامه</button>
+
+        <p class="foot">
+          حساب کاربری دارید؟ <a href="/">وارد شوید</a>
+        </p>
+      </section>
+
+      <!-- ====================== Step 2: OTP ====================== -->
+      <section id="step2" class="wizard-step">
+        <p class="muted center-text">
+          کد ۶ رقمی به ایمیل <strong id="su_emailHint" class="ltr" style="direction:ltr;display:inline-block;"></strong> ارسال شد.
+        </p>
+
+        <div id="su_otpRow" class="otp-row" aria-label="کد تایید">
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+          <input class="otp-input" inputmode="numeric" maxlength="1" />
+        </div>
+        <div id="su_otpError" class="error-text center-text"></div>
+
+        <p class="countdown">زمان باقی‌مانده: <strong id="su_countdown">۳:۰۰</strong></p>
+        <div class="center-text">
+          <button id="su_resendBtn" type="button" class="btn-link" disabled>ارسال دوباره کد</button>
+        </div>
+
+        <div class="actions-row">
+          <button id="step2BackBtn" type="button" class="btn btn-ghost">بازگشت</button>
+          <button id="step2NextBtn" type="button" class="btn btn-primary">تایید و ادامه</button>
+        </div>
+      </section>
+
+      <!-- ====================== Step 3: password ====================== -->
+      <section id="step3" class="wizard-step">
+        <div class="field">
+          <label for="su_pass">رمز عبور</label>
+          <div class="input-wrap">
+            <input id="su_pass" type="password" class="input" placeholder="رمز عبور" />
+            <button type="button" class="toggle-pass" data-toggle="su_pass">نمایش</button>
+          </div>
+          <div class="strength-bar" id="su_strength">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <ul class="checklist" id="su_checklist">
+            <li data-rule="length">حداقل ۸ کاراکتر</li>
+            <li data-rule="upper">حداقل یک حرف بزرگ انگلیسی (A-Z)</li>
+            <li data-rule="digit">حداقل یک عدد (0-9)</li>
+            <li data-rule="special">حداقل یک کاراکتر خاص (!@#$%^&amp;*)</li>
+          </ul>
+        </div>
+
+        <div class="field">
+          <label for="su_pass2">تکرار رمز عبور</label>
+          <div class="input-wrap">
+            <input id="su_pass2" type="password" class="input" placeholder="تکرار رمز عبور" />
+            <button type="button" class="toggle-pass" data-toggle="su_pass2">نمایش</button>
+          </div>
+          <div id="su_matchIndicator" class="match-indicator"></div>
+        </div>
+
+        <div class="actions-row">
+          <button id="step3BackBtn" type="button" class="btn btn-ghost">بازگشت</button>
+          <button id="step3SubmitBtn" type="button" class="btn btn-primary">تکمیل ثبت‌نام</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Jalali date picker dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+'use strict';
+
+const TAG_MAP = {
+  'احراز هویت': 'Authentication',
+  'استوری‌ها': 'Stories',
+  'مدیریت استوری‌ها (ادمین)': 'Story Management (Admin)',
+  'پروفایل': 'Profile',
+  'سطح احراز هویت': 'Verification Level',
+  'اشتراک': 'Subscription',
+  'دستگاه‌ها': 'Devices',
+  'پیام‌ها': 'Messages',
+  'مدیریت احراز و اشتراک (ادمین)': 'Verification & Subscription Review (Admin)',
+  'پیام‌رسانی ادمین': 'Admin Messaging',
+  'آواتار': 'Avatar',
+  'سیستم دعوت': 'Referral System',
+  'سیستم دعوت (ادمین)': 'Referral System (Admin)',
+  'پوش نوتیفیکیشن': 'Web Push',
+  'دسته‌بندی‌ها': 'Categories',
+  'مدیریت دسته‌بندی‌ها (ادمین)': 'Category Management (Admin)',
+  'تراکنش‌ها': 'Transactions',
+  'بودجه': 'Budgets',
+  'گزارشات': 'Reports',
+  'امتیاز مالی': 'Financial Score',
+  'بینش‌های رفتاری': 'Behavioral Insights',
+  'صادرکردن': 'Export',
+  'اهداف پس‌انداز': 'Savings Goals',
+  'نمای بازار': 'Market View',
+  'دارایی‌ها': 'Assets',
+  'پیشنهاد تخصصی': 'Expert Recommendations',
+  'مدیریت پیشنهادات (ادمین)': 'Recommendation Management (Admin)',
+  'دنگ و دونگ': 'Split Bills',
+  'بنرهای تبلیغاتی': 'Promotional Banners',
+  'مدیریت بنرها (ادمین)': 'Banner Management (Admin)',
+  'احراز هویت ادمین': 'Admin Authentication',
+  'مدیریت مدیران (ادمین)': 'Admin User Management',
+  'آمار و داشبورد ادمین': 'Admin Stats & Dashboard',
+  'مدیریت کاربران (ادمین)': 'User Management (Admin)',
+};
+
+const APP_TAGS = [
+  { name: 'Authentication', description: 'Login, signup, email OTP verification, and password recovery' },
+  { name: 'Stories', description: 'Onboarding stories shown to new users' },
+  { name: 'Profile', description: 'User profile, password change, connected devices, and invite code' },
+  { name: 'Verification Level', description: 'User verification status and upgrade requests' },
+  { name: 'Subscription', description: 'Subscription plans, current status, and purchase requests' },
+  { name: 'Devices', description: 'View and remove devices linked to the account' },
+  { name: 'Messages', description: 'User inbox — list, mark read, delete' },
+  { name: 'Avatar', description: 'DiceBear avatars, seed selection, custom photo upload/delete' },
+  { name: 'Referral System', description: 'Invite codes, validation, signup application, discounts, and invitees list' },
+  { name: 'Web Push', description: 'VAPID public key and browser push subscription management' },
+  { name: 'Categories', description: 'Default and custom transaction categories; request new categories' },
+  { name: 'Transactions', description: 'Income/expense CRUD, filters, monthly summary, tags, recurring, CSV/Excel import' },
+  { name: 'Budgets', description: 'Monthly budgets, zero-based budgeting (ZBB), copy from previous month' },
+  { name: 'Reports', description: 'Monthly reports, comparisons, weekly patterns, cash-flow forecast, subscription tracker' },
+  { name: 'Financial Score', description: 'Monthly financial score 0–100 with history and improvement tips' },
+  { name: 'Behavioral Insights', description: 'Spending patterns, savings rate, subscriptions, budget usage, logging streaks' },
+  { name: 'Export', description: 'CSV and PDF report exports' },
+  { name: 'Savings Goals', description: 'Define goals, contribute/withdraw, track progress' },
+  { name: 'Market View', description: 'Live gold, currency, crypto, and commodity prices via BrsApi.ir' },
+  { name: 'Assets', description: 'Personal asset tracking and net worth — requires active subscription' },
+  { name: 'Expert Recommendations', description: 'Expert financial recommendations with status tracking — requires active subscription' },
+  { name: 'Split Bills', description: 'Group expense splitting, balances, settlements, and public share links' },
+  { name: 'Promotional Banners', description: 'Dashboard carousel banners — impressions and clicks' },
+];
+
+const ADMIN_TAGS = [
+  { name: 'Admin Authentication', description: 'Admin panel login, logout, password change (separate cookie: dakhlyar_admin_sid)' },
+  { name: 'Admin User Management', description: 'Create, edit, delete admin accounts — superadmin only' },
+  { name: 'Admin Stats & Dashboard', description: 'Overview stats, user growth, subscription revenue, categories, activity log' },
+  { name: 'User Management (Admin)', description: 'List/search users, profile details, approve/reject verification and subscription' },
+  { name: 'Verification & Subscription Review (Admin)', description: 'Review and approve/reject user verification and subscription requests' },
+  { name: 'Admin Messaging', description: 'Broadcast/direct messages, expert recommendation delivery, history and stats' },
+  { name: 'Story Management (Admin)', description: 'Upload, edit, delete, reorder, and reset onboarding stories' },
+  { name: 'Banner Management (Admin)', description: 'Upload, edit, delete promotional banners and view CTR stats' },
+  { name: 'Recommendation Management (Admin)', description: 'CRUD expert recommendations and send push/in-app messages' },
+  { name: 'Category Management (Admin)', description: 'Approve/reject user category requests and manage default categories' },
+  { name: 'Referral System (Admin)', description: 'View referral relationships and referral system statistics' },
+];
+
+const META = {
+  app: {
+    title: 'Dakhlyar — App API Documentation',
+    description: 'User-facing API for the Dakhlyar personal finance app (auth, transactions, reports, assets, and more)',
+  },
+  admin: {
+    title: 'Dakhlyar — Admin Panel API Documentation',
+    description: 'Admin panel API for Dakhlyar — authentication, user management, content, messaging, and analytics',
+  },
+};
+
+module.exports = { TAG_MAP, APP_TAGS, ADMIN_TAGS, META };

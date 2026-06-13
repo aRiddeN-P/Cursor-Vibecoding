@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>دخلیار — پیام‌ها</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/profile.css" />
+  <link rel="stylesheet" href="/css/messages.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body>
+  <main class="app-shell" style="padding-bottom:32px;padding-top:16px">
+    <div class="profile-shell">
+      <div class="page-header">
+        <button class="back-btn" id="backBtn" aria-label="بازگشت">→</button>
+        <h1>پیام‌ها</h1>
+        <div style="flex:1"></div>
+        <button class="mark-all-btn" id="markAllBtn" aria-label="خواندن همه">
+          خواندن همه
+        </button>
+      </div>
+
+      <div id="messagesList" class="messages-list">
+        <div class="muted" style="padding:14px;text-align:center">در حال بارگذاری…</div>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:300"></div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/messages.js"></script>
+  <script src="/js/push-init.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>نمای بازار — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/market.css?v=20260612p8d" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.location.href='/profile.html'"
+              aria-label="پروفایل" title="پروفایل">
+        <i class="ti ti-user-circle"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">نمای بازار</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-refresh" aria-label="بروزرسانی" title="بروزرسانی">
+        <i class="ti ti-refresh" id="refresh-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <nav class="market-tabs" id="market-tabs" aria-label="دسته‌های بازار">
+    <button type="button" class="market-tab active" data-tab="gold">طلا و ارز</button>
+    <button type="button" class="market-tab" data-tab="crypto">کریپتو</button>
+    <button type="button" class="market-tab" data-tab="commodity">کامودیتی</button>
+    <button type="button" class="market-tab" data-tab="favorites">علاقه‌مندی‌ها</button>
+  </nav>
+
+  <div class="market-search">
+    <input type="search" id="market-search" placeholder="جستجو…" autocomplete="off" />
+  </div>
+
+  <div class="market-toolbar" id="crypto-toolbar" style="display:none;">
+    <label for="crypto-sort" style="font-size:12px;color:var(--color-text-2);">مرتب‌سازی:</label>
+    <select id="crypto-sort" class="market-sort">
+      <option value="default">پیش‌فرض</option>
+      <option value="change_desc">بیشترین تغییر</option>
+      <option value="change_asc">کمترین تغییر</option>
+      <option value="mcap">بزرگترین مارکت‌کپ</option>
+    </select>
+  </div>
+
+  <div class="cache-age" id="cache-age">در حال بارگذاری…</div>
+  <div id="market-vpn-block" class="market-vpn-block" style="display:none;">
+    <div class="market-vpn-icon">🔒</div>
+    <h3>اتصال VPN شناسایی شد</h3>
+    <p>برای مشاهده نمای بازار، لطفاً VPN خود را خاموش کنید و دوباره تلاش نمایید.</p>
+    <button type="button" class="dk-sheet-btn primary" id="btn-vpn-retry">تلاش مجدد</button>
+  </div>
+  <div id="market-error" class="market-error-banner" style="display:none;"></div>
+
+  <main class="page-content" id="main-content">
+    <div id="market-loading" class="market-loading">در حال دریافت قیمت‌ها…</div>
+    <div id="market-grid" class="market-grid" style="display:none;"></div>
+  </main>
+
+  <div class="market-toast" id="market-toast">بروزرسانی شد ✓</div>
+
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+  <div class="dk-sheet" id="detail-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="detail-title">جزئیات</h3>
+      <button type="button" class="close-btn" data-close-sheet="detail-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="detail-body"></div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="detail-share">اشتراک‌گذاری</button>
+    </div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/vpn-detect.js"></script>
+  <script src="/js/market.js?v=20260612p8d"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/bottom-nav.js"></script>
+  <script src="/js/push-init.js"></script>
+  <script>DakhlyarNav.init('market');</script>
+</body>
+</html>

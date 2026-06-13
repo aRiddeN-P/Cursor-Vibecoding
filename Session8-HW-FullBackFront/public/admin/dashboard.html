@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>داشبورد — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-dashboard.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-page-title" id="admin-page-title">داشبورد</h1>
+      </div>
+      <div class="admin-content" id="admin-content">
+
+        <div class="admin-kpi-grid" id="kpi-grid">
+          <div class="admin-kpi-card"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+        </div>
+
+        <div class="admin-chart-row">
+          <div class="admin-card" style="flex:1.5">
+            <div class="admin-card-title">رشد کاربران — ۶ ماه اخیر</div>
+            <svg id="chart-growth" class="admin-chart-svg"></svg>
+          </div>
+          <div class="admin-card" style="flex:1">
+            <div class="admin-card-title">توزیع سطح احراز</div>
+            <svg id="chart-verification" class="admin-chart-svg"></svg>
+          </div>
+        </div>
+
+        <div class="admin-chart-row">
+          <div class="admin-card" style="flex:1">
+            <div class="admin-card-title">توزیع اشتراک</div>
+            <svg id="chart-subscriptions" class="admin-chart-svg"></svg>
+          </div>
+          <div class="admin-card" style="flex:1.5">
+            <div class="admin-card-title">فعالیت کاربران — ۶ ماه اخیر</div>
+            <div id="engagement-trend-list"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+          </div>
+        </div>
+
+        <div class="admin-chart-row">
+          <div class="admin-card" style="flex:1">
+            <div class="admin-card-title">
+              درخواست‌های احراز هویت در انتظار
+              <span class="admin-badge amber" id="pending-verif-count">۰</span>
+            </div>
+            <div id="pending-verif-list"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+            <a href="/admin/users.html?tab=verification" class="admin-btn secondary sm" style="margin-top:12px;">مشاهده همه</a>
+          </div>
+          <div class="admin-card" style="flex:1">
+            <div class="admin-card-title">
+              درخواست‌های اشتراک در انتظار
+              <span class="admin-badge amber" id="pending-sub-count">۰</span>
+            </div>
+            <div id="pending-sub-list"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+            <a href="/admin/users.html?tab=subscription" class="admin-btn secondary sm" style="margin-top:12px;">مشاهده همه</a>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-title">آمار بنرهای تبلیغاتی</div>
+          <div id="banner-stats"><p class="admin-empty-msg">در حال بارگذاری...</p></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script src="/admin/js/admin-charts.js"></script>
+  <script src="/admin/js/admin-dashboard.js"></script>
+</body>
+</html>

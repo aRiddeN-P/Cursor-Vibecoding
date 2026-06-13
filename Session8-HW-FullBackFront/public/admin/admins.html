@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مدیران — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-page-title">مدیران</h1>
+        <button type="button" class="admin-btn primary" id="btn-add-admin">
+          <i class="ti ti-plus"></i> افزودن ادمین جدید
+        </button>
+      </div>
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="admins-table">
+              <thead>
+                <tr>
+                  <th>نام کاربری</th>
+                  <th>ایمیل</th>
+                  <th>نقش</th>
+                  <th>وضعیت</th>
+                  <th>آخرین ورود</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="admins-tbody">
+                <tr><td colspan="6" style="text-align:center;color:var(--admin-text-3);">در حال بارگذاری...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add modal -->
+  <div class="admin-modal-overlay hidden" id="add-modal" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title">افزودن ادمین جدید</h2>
+        <button type="button" class="admin-modal-close" data-close="add-modal">&times;</button>
+      </div>
+      <form id="add-form">
+        <div class="admin-form-group">
+          <label for="add-username">نام کاربری</label>
+          <input class="admin-input" id="add-username" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="add-email">ایمیل</label>
+          <input class="admin-input" type="email" id="add-email" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="add-password">رمز عبور</label>
+          <input class="admin-input" type="password" id="add-password" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="add-role">نقش</label>
+          <select class="admin-input admin-select" id="add-role">
+            <option value="admin">ادمین</option>
+            <option value="superadmin">سوپر ادمین</option>
+          </select>
+        </div>
+        <div class="admin-modal-actions">
+          <button type="submit" class="admin-btn primary">ذخیره</button>
+          <button type="button" class="admin-btn secondary" data-close="add-modal">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="admin-modal-overlay hidden" id="edit-modal" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title">ویرایش ادمین</h2>
+        <button type="button" class="admin-modal-close" data-close="edit-modal">&times;</button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="admin-form-group">
+          <label for="edit-email">ایمیل</label>
+          <input class="admin-input" type="email" id="edit-email" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="edit-role">نقش</label>
+          <select class="admin-input admin-select" id="edit-role">
+            <option value="admin">ادمین</option>
+            <option value="superadmin">سوپر ادمین</option>
+          </select>
+        </div>
+        <div class="admin-form-group admin-form-check">
+          <input type="checkbox" id="edit-active" />
+          <label for="edit-active">حساب فعال</label>
+        </div>
+        <div class="admin-form-group admin-form-check">
+          <input type="checkbox" id="edit-must-change" />
+          <label for="edit-must-change">اجبار تغییر رمز در ورود بعدی</label>
+        </div>
+        <div class="admin-modal-actions">
+          <button type="submit" class="admin-btn primary">ذخیره تغییرات</button>
+          <button type="button" class="admin-btn secondary" data-close="edit-modal">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script>
+    (function () {
+      let currentAdminId = null;
+      let adminsList = [];
+
+      function roleLabel(role) {
+        return role === 'superadmin' ? 'سوپر ادمین' : 'ادمین';
+      }
+
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => adminCloseModal(btn.dataset.close));
+      });
+
+      document.querySelectorAll('.admin-modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', e => {
+          if (e.target === overlay) adminCloseAllModals();
+        });
+      });
+
+      function renderTable() {
+        const tbody = document.getElementById('admins-tbody');
+        if (!adminsList.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--admin-text-3);">ادمینی یافت نشد</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = adminsList.map(a => `
+          <tr>
+            <td>${a.username}</td>
+            <td dir="ltr" style="text-align:right;">${a.email}</td>
+            <td><span class="admin-badge ${a.role === 'superadmin' ? 'gold' : 'blue'}">${roleLabel(a.role)}</span></td>
+            <td><span class="admin-badge ${a.is_active ? 'green' : 'red'}">${a.is_active ? 'فعال' : 'غیرفعال'}</span></td>
+            <td>${AdminAPI.formatDate(a.last_login)}</td>
+            <td>
+              <button type="button" class="admin-btn secondary sm btn-edit" data-id="${a.id}">ویرایش</button>
+              <button type="button" class="admin-btn danger sm btn-delete" data-id="${a.id}">حذف</button>
+            </td>
+          </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+          btn.addEventListener('click', () => openEdit(Number(btn.dataset.id)));
+        });
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', () => deleteAdmin(Number(btn.dataset.id)));
+        });
+      }
+
+      async function loadAdmins() {
+        try {
+          const data = await AdminAPI.get('/api/admin/admins');
+          adminsList = data.admins || [];
+          renderTable();
+        } catch (err) {
+          AdminAPI.showToast(err.message || 'خطا در بارگذاری', 'error');
+        }
+      }
+
+      function openEdit(id) {
+        const admin = adminsList.find(a => a.id === id);
+        if (!admin) return;
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-email').value = admin.email;
+        document.getElementById('edit-role').value = admin.role;
+        document.getElementById('edit-active').checked = !!admin.is_active;
+        document.getElementById('edit-must-change').checked = false;
+        adminOpenModal('edit-modal');
+      }
+
+      async function deleteAdmin(id) {
+        const admin = adminsList.find(a => a.id === id);
+        if (!admin) return;
+        if (!await AdminAPI.confirm(`آیا از حذف «${admin.username}» مطمئن هستید؟`, { danger: true, confirmLabel: 'حذف', title: 'حذف ادمین' })) return;
+        try {
+          await AdminAPI.delete(`/api/admin/admins/${id}`);
+          AdminAPI.showToast('ادمین حذف شد');
+          loadAdmins();
+        } catch (err) {
+          AdminAPI.showToast(err.message || 'خطا در حذف', 'error');
+        }
+      }
+
+      document.getElementById('btn-add-admin').addEventListener('click', () => {
+        document.getElementById('add-form').reset();
+        adminOpenModal('add-modal');
+      });
+
+      document.getElementById('add-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          await AdminAPI.post('/api/admin/admins', {
+            username: document.getElementById('add-username').value.trim(),
+            email: document.getElementById('add-email').value.trim(),
+            password: document.getElementById('add-password').value,
+            role: document.getElementById('add-role').value,
+          });
+          adminCloseModal('add-modal');
+          AdminAPI.showToast('ادمین جدید اضافه شد');
+          loadAdmins();
+        } catch (err) {
+          AdminAPI.showToast(err.message || 'خطا در افزودن', 'error');
+        }
+      });
+
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = Number(document.getElementById('edit-id').value);
+        try {
+          await AdminAPI.patch(`/api/admin/admins/${id}`, {
+            email: document.getElementById('edit-email').value.trim(),
+            role: document.getElementById('edit-role').value,
+            is_active: document.getElementById('edit-active').checked,
+            must_change_password: document.getElementById('edit-must-change').checked,
+          });
+          adminCloseModal('edit-modal');
+          AdminAPI.showToast('تغییرات ذخیره شد');
+          loadAdmins();
+        } catch (err) {
+          AdminAPI.showToast(err.message || 'خطا در ویرایش', 'error');
+        }
+      });
+
+      AdminAPI.get('/api/admin/auth/me').then(data => {
+        currentAdminId = data.admin.id;
+        if (data.admin.role !== 'superadmin') {
+          window.location.href = '/admin/dashboard.html';
+          return;
+        }
+        initAdminLayout('admins');
+        loadAdmins();
+      }).catch(() => {
+        window.location.href = '/admin/login.html';
+      });
+    })();
+  </script>
+</body>
+</html>

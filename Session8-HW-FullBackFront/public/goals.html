@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>اهداف پس‌انداز — دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/goals.css?v=20260612p7" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="icon-btn" onclick="window.history.back()"
+              aria-label="بازگشت" title="بازگشت">
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">اهداف پس‌انداز</div>
+    <div class="header-left">
+      <button type="button" class="icon-btn" id="btn-add-goal" aria-label="افزودن هدف" title="افزودن هدف">
+        <i class="ti ti-plus"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content" id="main-content">
+    <div id="goals-loading" class="goals-loading">در حال بارگذاری…</div>
+    <div id="goals-content" style="display:none;">
+
+      <div class="summary-card" id="summary-card">
+        <div class="total-saved" id="sum-saved">۰</div>
+        <div class="total-label">مجموع پس‌انداز شده</div>
+        <div class="summary-progress-wrap">
+          <div class="summary-progress-fill" id="sum-progress" style="width:0%"></div>
+        </div>
+        <div class="summary-meta" id="sum-meta">—</div>
+      </div>
+
+      <div class="goals-list-header" id="goals-list-header" style="display:none;">
+        <h3>اهداف من</h3>
+        <button type="button" class="goal-add-inline" id="btn-add-goal-inline">
+          <i class="ti ti-plus"></i> هدف جدید
+        </button>
+      </div>
+
+      <div id="goals-list"></div>
+      <div id="goals-empty" class="goals-empty" style="display:none;">
+        <div class="icon">🎯</div>
+        <h3>هنوز هدفی تعریف نشده</h3>
+        <p>می‌توانید چندین هدف پس‌انداز همزمان داشته باشید — مثلاً لپتاپ، سفر، یا پس‌انداز اضطراری.</p>
+        <button type="button" class="dk-sheet-btn primary" id="btn-empty-add" style="max-width:220px;margin:0 auto;">ایجاد اولین هدف</button>
+      </div>
+      <button type="button" class="goals-toggle-completed" id="toggle-completed" style="display:none;"></button>
+
+      <!-- Cash flow forecast widget -->
+      <div class="forecast-card" id="forecast-card">
+        <div class="widget-title">پیش‌بینی جریان نقدی</div>
+        <div class="widget-row">موجودی فعلی: <strong id="fc-current">—</strong> تومان</div>
+        <div class="widget-progress-wrap">
+          <div class="widget-progress-fill" id="fc-progress" style="width:0%"></div>
+        </div>
+        <div class="widget-row" id="fc-days">—</div>
+        <div class="widget-row">پیش‌بینی آخر ماه: <strong id="fc-projected">—</strong> تومان</div>
+        <div style="margin-top:8px;">
+          <span class="confidence-badge medium" id="fc-confidence">—</span>
+        </div>
+        <div class="widget-row" id="fc-insight" style="margin-top:10px;font-size:12px;">—</div>
+      </div>
+
+      <!-- ZBB widget -->
+      <div class="zbb-card" id="zbb-card">
+        <div class="widget-title">بودجه‌ریزی صفرمحور</div>
+        <div class="widget-row">درآمد این ماه: <strong id="zbb-income">—</strong> تومان</div>
+        <div class="widget-row">تخصیص‌یافته: <strong id="zbb-budgeted">—</strong> تومان</div>
+        <div class="zbb-bar-wrap">
+          <div class="zbb-bar-fill" id="zbb-bar" style="width:0%"></div>
+        </div>
+        <div class="widget-row">
+          تخصیص‌نشده:
+          <span class="unassigned-amount" id="zbb-unassigned">—</span> تومان
+        </div>
+        <div class="zbb-success-msg" id="zbb-success" style="display:none;">
+          🎉 همه درآمد شما تخصیص یافته است!
+        </div>
+        <button type="button" class="zbb-link-btn" id="btn-zbb-budget">تنظیم بودجه‌ها</button>
+      </div>
+
+    </div>
+  </main>
+
+  <button type="button" class="fab" id="fab-add-goal" aria-label="افزودن هدف جدید" title="افزودن هدف جدید">
+    <i class="ti ti-plus" aria-hidden="true"></i>
+  </button>
+
+  <div class="dk-sheet-overlay" id="sheet-overlay"></div>
+
+  <!-- Add/Edit goal sheet -->
+  <div class="dk-sheet" id="goal-form-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="goal-form-title">هدف جدید</h3>
+      <button type="button" class="close-btn" data-close-sheet="goal-form-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label>عنوان <span class="char-count" id="gf-title-count">۰/۶۰</span></label>
+        <input type="text" id="gf-title" maxlength="60" placeholder="مثلاً: لپتاپ جدید" />
+      </div>
+      <div class="fld">
+        <label>مبلغ هدف</label>
+        <div class="dk-amount-wrap">
+          <input type="text" inputmode="numeric" id="gf-target" placeholder="۰" autocomplete="off" />
+          <div class="formatted" id="gf-target-fmt">۰ تومان</div>
+        </div>
+      </div>
+      <div class="fld">
+        <label>آیکون</label>
+        <div class="gl-emoji-row" id="gf-emoji-row"></div>
+        <input type="text" id="gf-emoji-custom" maxlength="4" placeholder="ایموجی دلخواه" style="margin-top:8px;width:100%;" />
+      </div>
+      <div class="fld">
+        <label>رنگ</label>
+        <div class="gl-color-row" id="gf-color-row"></div>
+      </div>
+      <div class="fld">
+        <label>تاریخ هدف (اختیاری — شمسی)</label>
+        <input type="text" id="gf-deadline" placeholder="1404-06-15" inputmode="numeric" />
+        <div class="helper" id="gf-deadline-pretty"></div>
+      </div>
+      <div class="fld" id="gf-initial-wrap">
+        <label>مبلغ اولیه (اختیاری)</label>
+        <div class="dk-amount-wrap">
+          <input type="text" inputmode="numeric" id="gf-initial" placeholder="۰" autocomplete="off" />
+          <div class="formatted" id="gf-initial-fmt">۰ تومان</div>
+        </div>
+        <div class="helper">چقدر از قبل پس‌انداز کرده‌اید؟</div>
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="gf-submit">ذخیره</button>
+    </div>
+  </div>
+
+  <!-- Contribute / Withdraw sheet -->
+  <div class="dk-sheet" id="amount-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="amount-sheet-title">واریز به هدف</h3>
+      <button type="button" class="close-btn" data-close-sheet="amount-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body">
+      <div class="fld">
+        <label>مبلغ</label>
+        <div class="dk-amount-wrap">
+          <input type="text" inputmode="numeric" id="af-amount" placeholder="۰" autocomplete="off" />
+          <div class="formatted" id="af-amount-fmt">۰ تومان</div>
+        </div>
+      </div>
+      <div class="fld">
+        <label>یادداشت (اختیاری)</label>
+        <input type="text" id="af-note" maxlength="200" />
+      </div>
+    </div>
+    <div class="dk-sheet-foot">
+      <button type="button" class="dk-sheet-btn primary" id="af-submit">تأیید</button>
+    </div>
+  </div>
+
+  <!-- History sheet -->
+  <div class="dk-sheet" id="history-sheet" role="dialog" aria-modal="true">
+    <div class="dk-sheet-handle"></div>
+    <div class="dk-sheet-header">
+      <h3 id="history-sheet-title">تاریخچه</h3>
+      <button type="button" class="close-btn" data-close-sheet="history-sheet" aria-label="بستن">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="dk-sheet-body" id="history-list"></div>
+  </div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/jalali.js"></script>
+  <script src="/js/goals.js?v=20260612p7c"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/bottom-nav.js"></script>
+  <script src="/js/push-init.js"></script>
+  <script>DakhlyarNav.init('');</script>
+</body>
+</html>

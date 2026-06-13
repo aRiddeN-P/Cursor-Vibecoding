@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>پیشنهادات — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-content.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <span>دخلیار</span>
+        <small>پنل مدیریت</small>
+      </div>
+      <nav class="admin-nav">
+        <a href="/admin/dashboard.html" class="admin-nav-item" data-page="dashboard"><i class="ti ti-dashboard"></i> داشبورد</a>
+        <a href="/admin/users.html" class="admin-nav-item" data-page="users"><i class="ti ti-users"></i> کاربران</a>
+        <a href="/admin/messages.html" class="admin-nav-item" data-page="messages"><i class="ti ti-message"></i> پیام‌رسانی</a>
+        <a href="/admin/recommendations.html" class="admin-nav-item" data-page="recommendations"><i class="ti ti-bulb"></i> پیشنهادات</a>
+        <a href="/admin/stories.html" class="admin-nav-item" data-page="stories"><i class="ti ti-photo"></i> استوری‌ها</a>
+        <a href="/admin/banners.html" class="admin-nav-item" data-page="banners"><i class="ti ti-ad"></i> بنرها</a>
+        <a href="/admin/categories.html" class="admin-nav-item" data-page="categories"><i class="ti ti-tag"></i> دسته‌بندی‌ها</a>
+        <div class="admin-nav-divider"></div>
+        <a href="/admin/admins.html" class="admin-nav-item" data-page="admins" id="nav-admins"><i class="ti ti-shield"></i> مدیران</a>
+        <a href="/admin/history.html" class="admin-nav-item admin-nav-sub" data-page="history" id="nav-history"><i class="ti ti-history"></i> تاریخچه</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <span id="admin-username-display"></span>
+        <button type="button" id="btn-admin-logout">خروج</button>
+      </div>
+    </aside>
+    <button type="button" class="admin-sidebar-toggle" id="sidebar-toggle"><i class="ti ti-menu-2"></i></button>
+    <main class="admin-main" id="admin-main">
+      <div class="admin-topbar"><h1 class="admin-page-title">پیشنهادات کارشناس</h1></div>
+      <div class="admin-content">
+        <div class="admin-content-topbar">
+          <button type="button" class="admin-btn primary" id="btn-new-rec">پیشنهاد جدید</button>
+          <div class="admin-filter-pills">
+            <button type="button" class="admin-filter-pill active" data-filter="all">همه</button>
+            <button type="button" class="admin-filter-pill" data-filter="action">اقدام</button>
+            <button type="button" class="admin-filter-pill" data-filter="alert">هشدار</button>
+            <button type="button" class="admin-filter-pill" data-filter="active">فعال</button>
+            <button type="button" class="admin-filter-pill" data-filter="expired">منقضی</button>
+          </div>
+        </div>
+        <div class="admin-card admin-content-table-wrap">
+          <table class="admin-content-table">
+            <thead>
+              <tr>
+                <th>عنوان</th>
+                <th>نوع</th>
+                <th>اولویت</th>
+                <th>دارایی</th>
+                <th>وضعیت</th>
+                <th>تاریخ انقضا</th>
+                <th>آمار</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="rec-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="admin-modal-overlay hidden" id="rec-modal" hidden>
+    <div class="admin-modal" style="max-width:540px">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title" id="rec-modal-title">پیشنهاد جدید</h2>
+        <button type="button" class="admin-modal-close" id="rec-modal-close">&times;</button>
+      </div>
+      <form id="rec-form">
+        <div class="admin-form-row">
+          <label for="rec-title">عنوان</label>
+          <input type="text" class="admin-input" id="rec-title" maxlength="80" required />
+          <div class="admin-char-counter" id="title-counter">۰/۸۰</div>
+        </div>
+        <div class="admin-form-row">
+          <label for="rec-body">متن کامل</label>
+          <textarea class="admin-input" id="rec-body" rows="4" maxlength="1000" required></textarea>
+          <div class="admin-char-counter" id="body-counter">۰/۱۰۰۰</div>
+        </div>
+        <div class="admin-form-row">
+          <label>نوع</label>
+          <div class="admin-radio-group">
+            <label><input type="radio" name="type" value="action" checked /> اقدام</label>
+            <label><input type="radio" name="type" value="alert" /> هشدار</label>
+          </div>
+        </div>
+        <div class="admin-form-row">
+          <label for="rec-asset">دارایی مرتبط (اختیاری)</label>
+          <select class="admin-input admin-select" id="rec-asset">
+            <option value="">— بدون دارایی —</option>
+          </select>
+        </div>
+        <div class="admin-form-row">
+          <label for="rec-target">هدف درصدی (۰–۱۰۰، اختیاری)</label>
+          <input type="number" class="admin-input" id="rec-target" min="0" max="100" />
+        </div>
+        <div class="admin-form-row">
+          <label>اولویت</label>
+          <div class="admin-radio-pills">
+            <label class="admin-radio-pill"><input type="radio" name="priority" value="urgent" /> فوری</label>
+            <label class="admin-radio-pill"><input type="radio" name="priority" value="high" /> مهم</label>
+            <label class="admin-radio-pill"><input type="radio" name="priority" value="medium" checked /> متوسط</label>
+            <label class="admin-radio-pill"><input type="radio" name="priority" value="low" /> کم</label>
+          </div>
+        </div>
+        <div class="admin-form-row">
+          <label for="rec-expires">تاریخ انقضا</label>
+          <input type="text" class="admin-input admin-jalali-datetime" id="rec-expires" disabled autocomplete="off" placeholder="انتخاب تاریخ و ساعت" />
+          <label class="admin-form-check" style="margin-top:8px">
+            <input type="checkbox" id="rec-no-expire" checked /> بدون انقضا
+          </label>
+        </div>
+        <div class="rec-preview-card">
+          <div class="rec-preview-label">پیش‌نمایش در اپ</div>
+          <div class="rec-preview-title" id="preview-title">عنوان پیشنهاد</div>
+          <div class="rec-preview-body" id="preview-body">متن پیشنهاد اینجا نمایش داده می‌شود...</div>
+        </div>
+        <div class="admin-modal-actions">
+          <button type="submit" class="admin-btn primary">ذخیره</button>
+          <button type="button" class="admin-btn secondary" id="rec-modal-cancel">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay hidden" id="stats-modal" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h2 class="admin-modal-title">آمار پیشنهاد</h2>
+        <button type="button" class="admin-modal-close" id="stats-modal-close">&times;</button>
+      </div>
+      <div class="stats-pie-wrap">
+        <div id="stats-pie"></div>
+        <div class="stats-pie-legend" id="stats-legend"></div>
+      </div>
+      <div class="admin-form-row" style="margin-top:16px">
+        <label>کاربران با وضعیت «انجام شد»</label>
+        <div id="stats-done-list" style="font-size:13px;line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-layout.js"></script>
+  <script>initAdminLayout('recommendations');</script>
+  <script src="/admin/js/admin-date-picker.js"></script>
+  <script src="/admin/js/admin-recommendations.js"></script>
+</body>
+</html>

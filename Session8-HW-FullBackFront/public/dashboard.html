@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>دخلیار — داشبورد</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="apple-touch-icon" href="/img/logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1A5C3A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="دخلیار" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/modal.css" />
+  <link rel="stylesheet" href="/css/transactions.css?v=20260612c" />
+  <link rel="stylesheet" href="/css/dashboard.css?v=20260612p11" />
+  <link rel="stylesheet" href="/css/banner.css?v=20260612p13" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body class="app-shell-body">
+
+  <header class="app-header">
+    <div class="header-right">
+      <button type="button" class="dash-avatar-btn" id="btn-profile" aria-label="پروفایل">
+        <img id="dash-avatar" src="/img/logo.png" alt="" />
+      </button>
+      <button type="button" class="icon-btn" onclick="window.location.href='/messages.html'"
+              aria-label="پیام‌ها" title="پیام‌ها">
+        <i class="ti ti-bell"></i>
+        <span class="badge" id="msg-badge" style="display:none">0</span>
+      </button>
+    </div>
+    <div class="header-title">صفحه اصلی</div>
+    <div class="header-left">
+      <div class="dash-header-brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <span>دخلیار</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content" id="main-content">
+
+    <section class="dash-hero" id="sec-hero">
+      <div class="dash-hero-label">
+        <span id="hero-label">ارزش حدودی کل دارایی</span>
+        <button type="button" class="dash-hero-eye" id="btn-hero-eye" aria-label="نمایش/پنهان">👁</button>
+      </div>
+      <div class="dash-hero-value">
+        <span>~</span>
+        <span id="hero-value">...</span>
+        <span style="font-size:14px;opacity:.6">تومان</span>
+      </div>
+      <div class="dash-hero-change" id="hero-change"></div>
+      <div class="dash-hero-note" id="hero-note" style="display:none;"></div>
+    </section>
+
+    <div class="dash-quick-actions">
+      <button type="button" class="dash-action" id="act-add-tx">
+        <span class="dash-action-icon"><i class="ti ti-plus"></i></span>
+        <span class="dash-action-label">ثبت تراکنش</span>
+      </button>
+      <button type="button" class="dash-action" onclick="location.href='/reports.html'">
+        <span class="dash-action-icon"><i class="ti ti-chart-bar"></i></span>
+        <span class="dash-action-label">گزارش ماهانه</span>
+      </button>
+      <button type="button" class="dash-action" onclick="location.href='/goals.html'">
+        <span class="dash-action-icon"><i class="ti ti-target"></i></span>
+        <span class="dash-action-label">اهداف</span>
+      </button>
+      <button type="button" class="dash-action" onclick="location.href='/split.html'">
+        <span class="dash-action-icon"><i class="ti ti-users-group"></i></span>
+        <span class="dash-action-label">دنگ و دونگ</span>
+      </button>
+      <button type="button" class="dash-action" onclick="location.href='/reports.html#budget'">
+        <span class="dash-action-icon"><i class="ti ti-wallet"></i></span>
+        <span class="dash-action-label">بودجه‌ها</span>
+      </button>
+    </div>
+
+    <div class="dash-banner" id="dash-banner"></div>
+
+    <section class="dash-section" id="sec-summary">
+      <div class="dash-section-header">
+        <div class="dash-section-title">خلاصه این ماه</div>
+        <a class="dash-section-link" href="/reports.html">مشاهده گزارش کامل</a>
+      </div>
+      <div class="dash-summary-card" id="summary-card">
+        <div class="dash-skeleton h28" id="summary-skel"></div>
+      </div>
+    </section>
+
+    <section class="dash-section" id="sec-score">
+      <div class="dash-section-header">
+        <div class="dash-section-title">امتیاز مالی</div>
+        <a class="dash-section-link" href="/score.html">مشاهده جزئیات</a>
+      </div>
+      <div class="dash-score-card" id="score-card" onclick="location.href='/score.html'">
+        <div class="dash-skeleton h60" id="score-skel" style="width:100%"></div>
+      </div>
+    </section>
+
+    <section class="dash-section" id="sec-market">
+      <div class="dash-section-header">
+        <div class="dash-section-title">قیمت بازار</div>
+        <a class="dash-section-link" href="/market.html">نمای بازار</a>
+      </div>
+      <div class="market-ticker" id="market-ticker">
+        <div class="dash-skeleton h80" style="min-width:100%"></div>
+      </div>
+    </section>
+
+    <section class="dash-section" id="sec-tx">
+      <div class="dash-section-header">
+        <div class="dash-section-title">آخرین تراکنش‌ها</div>
+        <a class="dash-section-link" href="/transactions.html">مشاهده همه</a>
+      </div>
+      <div class="dash-tx-list" id="tx-list">
+        <div class="dash-skeleton h60"></div>
+      </div>
+    </section>
+
+    <section class="dash-section" id="sec-goals" style="display:none;">
+      <div class="dash-section-header">
+        <div class="dash-section-title">اهداف پس‌انداز</div>
+        <a class="dash-section-link" href="/goals.html">مشاهده همه اهداف</a>
+      </div>
+      <div class="dash-goals-list" id="goals-list"></div>
+    </section>
+
+    <section class="dash-section" id="sec-insight">
+      <div class="dash-section-header">
+        <div class="dash-section-title">بینش مالی</div>
+      </div>
+      <div class="dash-insight-card" id="insight-card">
+        <span class="dash-insight-icon">💡</span>
+        <p class="dash-insight-text" id="insight-text">در حال بارگذاری…</p>
+        <button type="button" class="dash-insight-refresh" id="btn-insight-refresh" aria-label="بینش بعدی">↻</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" style="display:none;position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:300;"></div>
+
+  <script src="/js/modal.js"></script>
+  <script src="/js/date-fa.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/stories.js"></script>
+  <script src="/js/app-common.js"></script>
+  <script src="/js/banner.js?v=20260612p13"></script>
+  <script src="/js/dashboard.js?v=20260612p13"></script>
+  <script src="/js/bottom-nav.js"></script>
+  <script src="/js/push-init.js"></script>
+</body>
+</html>

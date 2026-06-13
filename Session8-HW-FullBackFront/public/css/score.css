@@ -1,0 +1,150 @@
+/* score.css — Phase 11 financial score page */
+
+.score-page { padding-bottom: 32px; }
+
+.score-arc-large-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 8px;
+  background: white;
+  margin: 12px 16px;
+  border-radius: var(--radius-lg, 16px);
+  border: 0.5px solid var(--color-border, #E5E7EB);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+.score-arc-large { display: block; margin: 0 auto; }
+.score-arc-num {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--color-text-1, #0D2E1E);
+  margin-top: -120px;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+.score-arc-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-2, #4B5563);
+}
+
+.score-history-section {
+  margin: 16px;
+  background: white;
+  border-radius: var(--radius-lg, 16px);
+  border: 0.5px solid var(--color-border, #E5E7EB);
+  padding: 16px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+.score-history-section h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.score-history-chart { width: 100%; height: 140px; }
+.score-best-month {
+  font-size: 12px;
+  color: var(--color-text-3, #9CA3AF);
+  margin-top: 10px;
+  text-align: center;
+}
+
+.score-section {
+  margin: 0 16px 16px;
+}
+.score-section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.score-section h3::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  background: var(--color-primary, #1A5C3A);
+  border-radius: 2px;
+}
+
+.score-breakdown-list { display: flex; flex-direction: column; gap: 10px; }
+.score-component-card {
+  background: white;
+  border-radius: var(--radius-lg, 16px);
+  border: 0.5px solid var(--color-border, #E5E7EB);
+  padding: 14px;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+.score-component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.score-component-name { font-size: 14px; font-weight: 600; color: var(--color-text-1, #0D2E1E); }
+.score-component-pts  { font-size: 14px; font-weight: 700; color: var(--color-primary, #1A5C3A); }
+.score-component-bar-wrap {
+  background: var(--color-bg, #F3F4F6);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.score-component-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--color-primary, #1A5C3A);
+  transition: width 0.6s ease;
+}
+.score-component-note { font-size: 12px; color: var(--color-text-3, #9CA3AF); }
+
+.insight-card {
+  background: white;
+  border-radius: var(--radius-lg, 16px);
+  border: 0.5px solid var(--color-border, #E5E7EB);
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+}
+.insight-icon { font-size: 22px; flex-shrink: 0; }
+.insight-text { font-size: 13px; line-height: 1.7; color: var(--color-text-2, #4B5563); }
+.insight-card.good    { border-right: 3px solid var(--color-success, #059669); }
+.insight-card.warning { border-right: 3px solid #F59E0B; }
+.insight-card.neutral { border-right: 3px solid #3B82F6; }
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 0.5px dashed var(--color-border, #E5E7EB);
+  font-size: 13px;
+  color: var(--color-text-2, #4B5563);
+  line-height: 1.6;
+}
+.tip-item:last-child { border-bottom: none; }
+.tip-item::before {
+  content: '○';
+  color: var(--color-primary, #1A5C3A);
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.score-loading {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--color-text-3, #9CA3AF);
+}
+
+.dash-muted {
+  font-size: 13px;
+  color: var(--color-text-3, #9CA3AF);
+  text-align: center;
+  padding: 8px 0;
+}

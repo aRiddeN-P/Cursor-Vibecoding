@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ورود — پنل مدیریت دخلیار</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin-base.css" />
+  <link rel="stylesheet" href="/admin/css/admin-login.css" />
+</head>
+<body class="login-page">
+  <div class="login-wrap">
+    <div class="login-card" id="login-card">
+      <div class="login-brand">
+        <img src="/img/logo.png" alt="دخلیار" />
+        <h1>پنل مدیریت</h1>
+        <p>دخلیار — ورود مدیران</p>
+      </div>
+
+      <div class="login-error" id="login-error"></div>
+
+      <form id="login-form" class="login-form">
+        <div class="admin-form-group">
+          <label for="username">نام کاربری</label>
+          <input class="admin-input" type="text" id="username" name="username" autocomplete="username" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="password">رمز عبور</label>
+          <input class="admin-input" type="password" id="password" name="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="admin-btn primary login-submit" id="btn-login">ورود</button>
+      </form>
+
+      <form id="change-form" class="login-form hidden">
+        <h2 class="login-change-heading">رمز عبور پیش‌فرض را تغییر دهید</h2>
+        <p class="login-change-desc">برای امنیت حساب، لطفاً یک رمز عبور جدید انتخاب کنید.<br />حداقل ۸ کاراکتر، یک حرف بزرگ، یک عدد و یک کاراکتر خاص.</p>
+        <div class="admin-form-group">
+          <label for="new-password">رمز عبور جدید</label>
+          <input class="admin-input" type="password" id="new-password" autocomplete="new-password" required />
+        </div>
+        <div class="admin-form-group">
+          <label for="confirm-password">تکرار رمز عبور</label>
+          <input class="admin-input" type="password" id="confirm-password" autocomplete="new-password" required />
+        </div>
+        <button type="submit" class="admin-btn primary login-submit" id="btn-change">ذخیره و ورود به پنل</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/js/admin-api.js"></script>
+  <script src="/admin/js/admin-login.js"></script>
+</body>
+</html>
