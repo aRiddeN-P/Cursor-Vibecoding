@@ -1,0 +1,15 @@
+/* Lalayi design tokens — shared across all frontend screens */
+
+:root {
+  --plum-deep: #1B0A2E;
+  --indigo-night: #2D1B5E;
+  --violet-mid: #6B3FA0;
+  --rose-blush: #E8729A;
+  --gold-dream: #F5C842;
+  --cloud-white: #F0ECF8;
+  --mist-lavender: #C4B5E8;
+
+  --radius: 24px;
+  --radius-lg: 36px;
+  --radius-pill: 100px;
+}

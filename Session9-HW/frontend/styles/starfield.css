@@ -1,0 +1,28 @@
+/* Fixed full-screen starfield — Lalayi's signature background */
+
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.starfield__star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--cloud-white);
+  opacity: 0.2;
+  animation: starfield-twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+
+@keyframes starfield-twinkle {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

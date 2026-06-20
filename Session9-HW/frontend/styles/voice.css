@@ -1,0 +1,138 @@
+/* Voice settings & recording */
+
+.voice-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.voice-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid rgba(196, 181, 232, 0.18);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.voice-list__name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.voice-list__status {
+  font-size: 0.9rem;
+  color: var(--mist-lavender);
+}
+
+.voice-list__status--ok {
+  color: var(--gold-dream);
+}
+
+.voice-list__delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+  padding: 0.25rem;
+}
+
+.voice-list__delete:hover {
+  opacity: 1;
+}
+
+.voice-record-btn {
+  margin-bottom: 1rem;
+}
+
+.voice-recorder {
+  margin-bottom: 1rem;
+}
+
+.voice-recorder__hint {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--mist-lavender);
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.voice-recorder__label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--mist-lavender);
+  margin-bottom: 0.5rem;
+}
+
+.voice-recorder__name {
+  margin-bottom: 1rem;
+  text-align: right;
+  direction: rtl;
+  letter-spacing: normal;
+}
+
+.voice-recorder__timer {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold-dream);
+  margin: 1rem 0 1.25rem;
+  direction: ltr;
+}
+
+.voice-recorder__preview {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.voice-recorder__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.voice-recorder__loading .lalayi-loading {
+  padding: 1rem 0;
+}
+
+/* Voice selection pills on playback */
+
+.voice-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.voice-pill {
+  padding: 0.45rem 0.9rem;
+  border: 2px solid rgba(196, 181, 232, 0.25);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cloud-white);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.voice-pill:hover:not(:disabled) {
+  border-color: var(--violet-mid);
+}
+
+.voice-pill--active {
+  border-color: var(--gold-dream);
+  background: rgba(245, 200, 66, 0.15);
+  color: var(--gold-dream);
+}
+
+.voice-pill:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

@@ -1,0 +1,88 @@
+/* Themed loading states */
+
+.lalayi-loading-mount {
+  width: 100%;
+}
+
+.lalayi-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.lalayi-loading__scene {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lalayi-loading__moon {
+  font-size: 3rem;
+  animation: lalayi-moon-spin 4s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(245, 200, 66, 0.45));
+}
+
+.lalayi-loading__star {
+  position: absolute;
+  color: var(--gold-dream);
+  font-size: 0.85rem;
+  opacity: 0.35;
+  animation: lalayi-star-twinkle 1.8s ease-in-out infinite;
+}
+
+.lalayi-loading__star--1 {
+  top: 4px;
+  right: 8px;
+  animation-delay: 0s;
+}
+
+.lalayi-loading__star--2 {
+  top: 28px;
+  left: 0;
+  animation-delay: 0.5s;
+}
+
+.lalayi-loading__star--3 {
+  bottom: 8px;
+  right: 4px;
+  animation-delay: 1s;
+  font-size: 0.7rem;
+}
+
+.lalayi-loading__text {
+  font-size: 0.95rem;
+  color: var(--mist-lavender);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.lalayi-loading--inline {
+  padding: 1rem 0;
+}
+
+@keyframes lalayi-moon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lalayi-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}

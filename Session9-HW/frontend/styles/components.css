@@ -1,0 +1,237 @@
+/* Shared Lalayi UI components */
+
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(160deg, var(--plum-deep) 0%, var(--indigo-night) 55%, #1a1040 100%);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--cloud-white);
+}
+
+.logo-mark__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--violet-mid), var(--rose-blush));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 24px rgba(107, 63, 160, 0.4);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.auth-card__subtitle {
+  font-size: 0.95rem;
+  color: var(--mist-lavender);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid rgba(196, 181, 232, 0.25);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cloud-white);
+  font-family: inherit;
+  font-size: 1.1rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+  direction: ltr;
+  transition: border-color 0.2s;
+}
+
+.input-field::placeholder {
+  color: rgba(196, 181, 232, 0.45);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--violet-mid);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--violet-mid), var(--rose-blush));
+  color: var(--cloud-white);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 20px rgba(232, 114, 154, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.link-back {
+  display: block;
+  width: 100%;
+  margin-top: 1.25rem;
+  background: none;
+  border: none;
+  color: var(--mist-lavender);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-back:hover {
+  color: var(--cloud-white);
+}
+
+.input-field--rtl {
+  direction: rtl;
+  text-align: right;
+  letter-spacing: normal;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--mist-lavender);
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.field-label:first-of-type {
+  margin-top: 0;
+}
+
+.field-label__hint {
+  font-weight: 400;
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 1rem 2rem;
+  border: 2px solid rgba(196, 181, 232, 0.35);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--cloud-white);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--mist-lavender);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.success-card {
+  text-align: center;
+}
+
+.success-card__message {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  color: var(--gold-dream);
+}
+
+.success-card__birth {
+  font-size: 0.95rem;
+  color: var(--mist-lavender);
+  margin-bottom: 2rem;
+}
+
+.error-message {
+  color: var(--rose-blush);
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 0.75rem;
+  min-height: 1.25rem;
+}
+
+.otp-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  direction: ltr;
+}
+
+.otp-digit {
+  width: 56px;
+  height: 64px;
+  border: 2px solid rgba(196, 181, 232, 0.25);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cloud-white);
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.otp-digit:focus {
+  outline: none;
+  border-color: var(--gold-dream);
+}
+
+.placeholder-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(160deg, var(--plum-deep) 0%, var(--indigo-night) 55%, #1a1040 100%);
+  text-align: center;
+}
+
+.placeholder-screen h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder-screen p {
+  color: var(--mist-lavender);
+}

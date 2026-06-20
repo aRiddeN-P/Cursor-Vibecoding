@@ -1,0 +1,89 @@
+/* Service usage panel for parents */
+
+.service-usage {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(196, 181, 232, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.service-usage__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cloud-white);
+  margin-bottom: 0.85rem;
+  text-align: right;
+}
+
+.service-usage__group + .service-usage__group {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(196, 181, 232, 0.12);
+}
+
+.service-usage__group-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mist-lavender);
+  margin-bottom: 0.65rem;
+  text-align: right;
+}
+
+.service-usage__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.service-usage__label {
+  font-size: 0.78rem;
+  color: var(--mist-lavender);
+  text-align: right;
+}
+
+.service-usage__value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gold-dream);
+  white-space: nowrap;
+}
+
+.service-usage__bar {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.65rem;
+  overflow: hidden;
+}
+
+.service-usage__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--violet-mid), var(--gold-dream));
+  transition: width 0.3s ease;
+}
+
+.service-usage__bar-fill--mid {
+  background: linear-gradient(90deg, var(--violet-mid), #e8a84a);
+}
+
+.service-usage__bar-fill--low {
+  background: linear-gradient(90deg, var(--rose-blush), #ff8fab);
+}
+
+.service-usage__footnote {
+  font-size: 0.72rem;
+  color: rgba(196, 181, 232, 0.75);
+  text-align: right;
+  line-height: 1.5;
+}
+
+.service-usage__unavailable {
+  font-size: 0.8rem;
+  color: var(--mist-lavender);
+  text-align: center;
+  padding: 0.5rem 0;
+}
